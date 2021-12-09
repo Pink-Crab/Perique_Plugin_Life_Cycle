@@ -121,8 +121,8 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 				return $this;}
 			public function create( string $name, array $args = array() ) {
 				return null;}
-			public function get( string $id ) {}
-			public function has( string $id ) {}
+			public function get( $id ) {}
+			public function has( $id ) {}
 		};
 		$app->set_container( $container );
 
@@ -144,8 +144,8 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 				return $this;}
 			public function create( string $name, array $args = array() ) {
 				return $this;}
-			public function get( string $id ) {}
-			public function has( string $id ) {}
+			public function get( $id ) {}
+			public function has( $id ) {}
 		};
 		$app->set_container( $container );
 
