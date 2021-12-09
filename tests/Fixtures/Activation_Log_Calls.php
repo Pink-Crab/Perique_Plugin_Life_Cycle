@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Mock class used for activation which writes to options table
+ * Mock class used for activation which updates internal log
  *
  * @package PinkCrab\Plugin_Lifecycle
  * @author Glynn Quelch glynn@pinkcrab.co.uk
@@ -14,9 +14,11 @@ namespace PinkCrab\Plugin_Lifecycle\Tests\Fixtures;
 
 use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
 
-class Activation_Write_Option implements Activation {
+class Activation_Log_Calls implements Activation {
+
+	public $calls = array();
 
 	public function run(): void {
-		update_option( 'pc_migration_activation_has_run', 'HAS RUNTY' );
+		$this->calls[] = '.';
 	}
 }
