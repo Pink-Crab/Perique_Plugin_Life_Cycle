@@ -45,7 +45,7 @@ $plugin_state_controller->event(new SomeEvent());
 $plugin_state_controller->event('Foo\Some_Class_Name'));
 $plugin_state_controller->finalise();
 ```
-The `finalise()` method can be passed the path of you main plugin file, if you have chosen to bootstrap the Application in an additional file. If left empty, will grab the base plugin filename automatically (based on where you created the Controller instance).
+The `finalise()` method can be passed the path of you main plugin file, if you have chosen to bootstrap the Application in an additional file. If left empty, will grab the base plugin filename automatically (based on where you created the Controller instanceg).
 
 > This uses the Perique DI Container, but as this has to be called before `init`, any custom rules will not be added. So any complex dependencies will need to be manually created first.
 
