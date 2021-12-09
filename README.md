@@ -70,11 +70,24 @@ All classes must implement the `PinkCrab\Plugin_Lifecycle\State_Event\Activation
 ```php
 class Create_Options_On_Activation implements Activation {
     public function run(): void{
-        update_option('plugin_activated', 'foo');
+        update_option('plugin_activated', true);
     }
 }
 ```
 > This would then be run whenever the plugin is activated
+
+### Deactivation
+
+All classes must implement the `PinkCrab\Plugin_Lifecycle\State_Event\Deactivation` interface.
+
+```php
+class Create_Options_On_Deactivation implements Deactivation {
+    public function run(): void{
+        update_option('plugin_activated', false);
+    }
+}
+```
+> This would then be run whenever the plugin is deactivated
 
 ## Change Log ##
 * 0.1.0 Inital version
