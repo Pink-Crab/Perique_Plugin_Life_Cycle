@@ -15,18 +15,20 @@ namespace PinkCrab\Plugin_Lifecycle\Tests\Unit;
 use stdClass;
 use WP_UnitTestCase;
 use Gin0115\WPUnit_Helpers\Objects;
-use PinkCrab\Perique\Application\App;
 use PinkCrab\Perique\Application\App_Factory;
 use PinkCrab\Perique\Interfaces\DI_Container;
-use PinkCrab\Plugin_Lifecycle\Plugin_State_Change;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Exception;
+use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Log_Calls;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Write_Option;
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_With_WPDB_Injected;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Event_Which_Will_Throw_On_Run;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Event_Which_Will_Throw_On_Construction;
 
 class Test_Plugin_State_Controller extends WP_UnitTestCase {
+
+	use App_Helper_Trait;
 
 	public static $app_instance;
 
@@ -34,9 +36,19 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 	 * Sets up instance of Perique App
 	 * Only loaded with basic DI Rules.
 	 */
-	public static function setUpBeforeClass() {
-		parent::setUpBeforeClass();
+	public function setUp() {
+		parent::setUp();
 		self::$app_instance = ( new App_Factory() )->with_wp_dice()->boot();
+	}
+
+	/**
+	 * Unsets the app instance, to be rebuilt next time.
+	 *
+	 * @return void
+	 */
+	public function tearDown() {
+		parent::tearDown();
+		$this->unset_app_instance();
 	}
 
 	/** @testdox It should be possible to shortcut some of the setup using the assumption this is called from the plugin.php file. */
@@ -163,5 +175,14 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller->register_hooks( __FILE__ );
 
 		$this->assertTrue( has_action( 'activate_' . plugin_basename( __FILE__ ) ) );
+	}
+
+	/** @testdox It should be possible to pass dependencies which are defined DI at App setup */
+	public function test_can_inject_with_wpdb(): void {
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		$state_controller->event( Activation_With_WPDB_Injected::class );
+
+		$events = Objects::get_property( $state_controller, 'state_events' );
+		$this->assertSame( $GLOBALS['wpdb'], $events[0]->wpdb );
 	}
 }
