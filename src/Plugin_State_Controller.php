@@ -16,8 +16,9 @@ declare(strict_types=1);
 
 namespace PinkCrab\Plugin_Lifecycle;
 
+use Exception;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Change;
-use PinkCrab\Plugin_Lifecycle\State_Events\Activation;
+use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
 use PinkCrab\Perique\Application\App;
 
 
@@ -65,13 +66,16 @@ class Plugin_State_Controller {
 		if ( ! is_subclass_of( $state_event, Plugin_State_Change::class ) ) {
 			throw Plugin_State_Exception::invalid_state_change_event_type( $state_event );
 		}
-
 		// If its a string, attempt to create via DI container.
 		if ( is_string( $state_event ) ) {
 			$state_event_string = $state_event;
 
-			/** @var Plugin_State_Change|null */
-			$state_event = $this->app->get_container()->create( $state_event );
+			try {
+				/** @var Plugin_State_Change|null */
+				$state_event = $this->app->get_container()->create( $state_event );
+			} catch ( \Throwable $th ) {
+				throw Plugin_State_Exception::failed_to_create_state_change_event( $state_event_string );
+			}
 
 			// Throw exception if failed to create
 			if ( null === $state_event || ! is_a( $state_event, Plugin_State_Change::class ) ) {
@@ -89,7 +93,9 @@ class Plugin_State_Controller {
 	 * @return self
 	 */
 	public function register_hooks( string $file ): self {
-		register_activation_hook( $file, array( $this, 'activation' ) );
+		if ( $this->has_events_for_state( Activation::class ) ) {
+			register_activation_hook( $file, array( $this, 'activation' ) );
+		}
 		return $this;
 	}
 
@@ -100,21 +106,38 @@ class Plugin_State_Controller {
 	 * @return void
 	 */
 	private function trigger_for_state( string $state ): void {
-		foreach ( array_filter(
+		foreach ( $this->get_events_for_state( $state ) as $event ) {
+			try {
+				$event->run();
+			} catch ( \Throwable $th ) {
+				throw Plugin_State_Exception::error_running_state_change_event( $event, $th );
+			}
+		}
+	}
+
+	/**
+	 * Gets all events for a given state.
+	 *
+	 * @param string $state
+	 * @return Plugin_State_Change[]
+	 */
+	private function get_events_for_state( string $state ): array {
+		return array_filter(
 			$this->state_events,
 			function( $e ) use ( $state ): bool {
 				return is_subclass_of( $e, $state );
 			}
-		) as $event ) {
-			try {
-				$event->run();
-			} catch ( \Throwable $th ) {
-				throw Plugin_State_Exception::failed_to_create_state_change_event(
-					$event,
-					$th
-				);
-			}
-		}
+		);
+	}
+
+	/**
+	 * Checks if they are any events for a given state.
+	 *
+	 * @param string $state
+	 * @return bool
+	 */
+	private function has_events_for_state( string $state ): bool {
+		return count( $this->get_events_for_state( $state ) ) !== 0;
 	}
 
 	/**
@@ -130,20 +153,22 @@ class Plugin_State_Controller {
 	 * Attempts to get the name of the file which called the class.
 	 *
 	 * @return string
+	 * @throws Plugin_State_Exception If can not locate path which created instance of controller.
 	 */
-	private function get_called_file(): string {
-		$file              = false;
-		$backtrace         = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
-		$include_functions = array( 'include', 'include_once', 'require', 'require_once' );
-		$backtrace_count   = count( $backtrace );
-		for ( $index = 0; $index < $backtrace_count; $index++ ) { //phpcs:ignore Generic.CodeAnalysis.ForLoopWithTestFunctionCall.NotAllowed
-			$function = $backtrace[ $index ]['function'];
-			if ( in_array( $function, $include_functions, true ) ) {
-				$file = $backtrace[ $index - 1 ]['file'];
-				break;
+	protected function get_called_file(): string {
+		$backtrace = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
+
+		$backtrace_count = count( $backtrace );
+		for ( $i = 0; $i < $backtrace_count; $i++ ) {
+			if ( $backtrace[ $i ]['function'] === __FUNCTION__
+			&& $backtrace[ $i ]['class'] === get_class()
+			&& \array_key_exists( ( $i + 1 ), $backtrace )
+			) {
+				return $backtrace[ $i + 1 ]['file'];
 			}
 		}
-		return $file;
+		// @codeCoverageIgnoreStart
+		throw Plugin_State_Exception::failed_to_locate_calling_file();
+		// @codeCoverageIgnoreEnd
 	}
-
 }

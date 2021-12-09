@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Mock class used for activation which writes to options table
+ * A mock class which will throw when calling run.
  *
  * @package PinkCrab\Plugin_Lifecycle
  * @author Glynn Quelch glynn@pinkcrab.co.uk
@@ -14,9 +14,8 @@ namespace PinkCrab\Plugin_Lifecycle\Tests\Fixtures;
 
 use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
 
-class Activation_Write_Option implements Activation {
-
+class Event_Which_Will_Throw_On_Run implements Activation {
 	public function run(): void {
-		update_option( 'pc_migration_activation_has_run', 'HAS RUNTY' );
+		throw new \Exception("[MOCK] Event_Which_Will_Throw_On_Run", 1);
 	}
 }

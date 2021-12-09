@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @since 0.0.1
  */
 
-namespace PinkCrab\Plugin_Lifecycle\State_Events;
+namespace PinkCrab\Plugin_Lifecycle\State_Event;
 
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Change;
 

@@ -46,4 +46,29 @@ class Plugin_State_Exception extends Exception {
 		);
 		return new Plugin_State_Exception( $message, 102 );
 	}
+
+	/**
+	 * Failed to locate path of file which created an instace of the Plugin State Controller
+	 * @code 103
+	 * @return Plugin_State_Exception
+	 */
+	public static function failed_to_locate_calling_file(): Plugin_State_Exception {
+		return new Plugin_State_Exception( 'Could not locate the file which created the Plugin State Controller. Please define this value manually using $controller->register_hooks( string $file )', 103 );
+	}
+
+	/**
+	 * Throws error while calling run() in state change event.
+	 * @code 104
+	 * @param Plugin_State_Change $event
+	 * @param Throwable $exception
+	 * @return Plugin_State_Exception
+	 */
+	public static function error_running_state_change_event( Plugin_State_Change $event, ?Throwable $exception = null ): Plugin_State_Exception {
+		$message = \sprintf(
+			'Failed to run %s->run(), error thrown::%s',
+			get_class( $event ),
+			$exception === null ? 'NO ERROR PASSED' : $exception->getMessage()
+		);
+		return new Plugin_State_Exception( $message, 104 );
+	}
 }
