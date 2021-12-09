@@ -89,5 +89,18 @@ class Create_Options_On_Deactivation implements Deactivation {
 ```
 > This would then be run whenever the plugin is deactivated
 
+### Uninstall
+
+All classes must implement the `PinkCrab\Plugin_Lifecycle\State_Event\Uninstall` interface.
+
+```php
+class Create_Options_On_Uninstall implements Uninstall {
+    public function run(): void{
+        delete_option('plugin_activated');
+    }
+}
+```
+> This would then be run whenever the plugin is uninstalled
+
 ## Change Log ##
 * 0.1.0 Inital version
