@@ -100,6 +100,7 @@ class Plugin_State_Controller {
 	 * @return void
 	 */
 	private function trigger_for_state( string $state ): void {
+		dump($state);
 		foreach ( array_filter(
 			$this->state_events,
 			function( $e ) use ( $state ): bool {
