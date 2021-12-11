@@ -16,6 +16,7 @@ use stdClass;
 use WP_UnitTestCase;
 use Gin0115\WPUnit_Helpers\Objects;
 use PinkCrab\Perique\Application\App_Factory;
+use PinkCrab\Plugin_Lifecycle\State_Change_Queue;
 use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
 use PinkCrab\Plugin_Lifecycle\State_Event\Uninstall_Queue;
@@ -121,7 +122,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		// Check plugin has been added to option of all with valid uninstall means.
 		$plugins = \get_option( 'uninstall_plugins' );
 		$this->assertArrayHasKey( ltrim( __FILE__, '/' ), $plugins );
-		$this->assertInstanceOf( Uninstall_Queue::class, $plugins[ ltrim( __FILE__, '/' ) ] );
+		$this->assertInstanceOf( State_Change_Queue::class, $plugins[ ltrim( __FILE__, '/' ) ] );
 
 		// Execute callback.
 		$callback = $plugins[ ltrim( __FILE__, '/' ) ];

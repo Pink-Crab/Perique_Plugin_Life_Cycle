@@ -93,18 +93,20 @@ class Create_Options_On_Deactivation implements Deactivation {
 
 All classes must implement the `PinkCrab\Plugin_Lifecycle\State_Event\Uninstall` interface.
 
-> As the Uninstall Callbacks are serialised, care must be taken when using dependencies. Ideally these should be 100% stand alone from your plugin and call only global functions and not from your plugin directly. Care should also be taken to ensure that if an exception is thrown through its execution, it doesnt prevent the plugin from being uninstalled.
+> As the Uninstall Callbacks are serialised, care must be taken when using dependencies. Ideally these should be 100% stand alone from your plugin and call only global functions and not from your plugin directly. Care should also be taken to ensure that if an exception is thrown through its execution, it doesn't prevent the plugin from being uninstalled.
 
 > We automatically catch any exceptions and silently fail. If you wish to handle this differently, please catch them in your own code.
 
 
 ```php
 class Create_Options_On_Uninstall implements Uninstall {
+    
+    
     public function run(): void{
         try{
             delete_option('plugin_activated');
         } catch( $th ){
-            // Do something!
+            // Do something rather than let it be silently caught above!
         }
     }
 }

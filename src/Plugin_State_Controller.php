@@ -17,6 +17,8 @@ declare(strict_types=1);
 namespace PinkCrab\Plugin_Lifecycle;
 
 use Exception;
+use PinkCrab\Plugin_Lifecycle\State_Change_Queue;
+
 use PinkCrab\Plugin_Lifecycle\State_Event\Uninstall_Queue;
 
 use PinkCrab\Plugin_Lifecycle\State_Event\Foo;
@@ -115,6 +117,7 @@ class Plugin_State_Controller {
 	 *
 	 * @param string $file
 	 * @return self
+	 * @throws Plugin_State_Exception [103] failed_to_locate_calling_file()
 	 */
 	public function finalise( ?string $file = null ): self {
 		if ( null === $file ) {
@@ -123,12 +126,12 @@ class Plugin_State_Controller {
 
 		// Activation hooks if need adding.
 		if ( $this->has_events_for_state( Activation::class ) ) {
-			register_activation_hook( $file, array( $this, 'activation' ) );
+			register_activation_hook( $file, $this->activation() );
 		}
 
 		// Deactivation hooks.
 		if ( $this->has_events_for_state( Deactivation::class ) ) {
-			register_deactivation_hook( $file, array( $this, 'deactivation' ) );
+			register_deactivation_hook( $file, $this->deactivation() );
 		}
 
 		// If we have an uninstall events, add then during activation.
@@ -143,22 +146,6 @@ class Plugin_State_Controller {
 		}
 
 		return $this;
-	}
-
-	/**
-	 * Triggers all events for a set state.
-	 *
-	 * @param string $state
-	 * @return void
-	 */
-	private function trigger_for_state( string $state ): void {
-		foreach ( $this->get_events_for_state( $state ) as $event ) {
-			try {
-				$event->run();
-			} catch ( \Throwable $th ) {
-				throw Plugin_State_Exception::error_running_state_change_event( $event, $th );
-			}
-		}
 	}
 
 	/**
@@ -187,33 +174,30 @@ class Plugin_State_Controller {
 	}
 
 	/**
-	 * Callback on activation call.
+	 * Returns an instance of the State_Change_Queue, populated with Activation events.
 	 *
-	 * @return void
+	 * @return State_Change_Queue
 	 */
-	public function activation(): void {
-		$this->trigger_for_state( Activation::class );
+	public function activation(): State_Change_Queue {
+		return new State_Change_Queue( ...$this->get_events_for_state( Activation::class ) );
 	}
 
 	/**
-	 * Callback on deactivation call.
+	 * Returns an instance of the State_Change_Queue, populated with Deactivation events.
 	 *
-	 * @return void
+	 * @return State_Change_Queue
 	 */
-	public function deactivation(): void {
-		$this->trigger_for_state( Deactivation::class );
+	public function deactivation(): State_Change_Queue {
+		return new State_Change_Queue( ...$this->get_events_for_state( Deactivation::class ) );
 	}
 
 	/**
-	 * Returns a static callable for use on uninstall
-	 * Callable triggers all Uninstall events when called.
+	 * Returns an instance of the State_Change_Queue, populated with Uninstall events.
 	 *
-	 * @return callable
+	 * @return State_Change_Queue
 	 */
-	public function uninstall(): callable {
-		/** @var Uninstall[] */
-		$uninstall_events = $this->get_events_for_state( Uninstall::class );
-		return new Uninstall_Queue( $uninstall_events );
+	public function uninstall(): State_Change_Queue {
+		return new State_Change_Queue( ...$this->get_events_for_state( Uninstall::class ) );
 	}
 
 	/**
