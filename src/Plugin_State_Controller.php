@@ -41,8 +41,16 @@ class Plugin_State_Controller {
 	 */
 	protected $state_events = array();
 
-	public function __construct( App $app ) {
-		$this->app = $app;
+	/**
+	 * Holds the location of the plugin base file.
+	 *
+	 * @var string|null
+	 */
+	protected $plugin_base_file = null;
+
+	public function __construct( App $app, ?string $plugin_base_file = null ) {
+		$this->app              = $app;
+		$this->plugin_base_file = $plugin_base_file;
 	}
 
 	/**
@@ -51,16 +59,26 @@ class Plugin_State_Controller {
 	 * @param App $app
 	 * @return self
 	 */
-	public static function init( App $app ): self {
-		$instance = new self( $app );
-		$instance->register_hooks( $instance->get_called_file() );
+	public static function init( App $app, ?string $plugin_base_file = null ): self {
+		$instance = new self( $app, $plugin_base_file );
 		return $instance;
+	}
+
+	/**
+	 * Set holds the location of the plugin base file.
+	 *
+	 * @param string $plugin_base_file  Holds the location of the plugin base file.
+	 * @return self
+	 */
+	public function set_plugin_base_file( string $plugin_base_file ): self {
+		$this->plugin_base_file = $plugin_base_file;
+		return $this;
 	}
 
 	/**
 	 * Adds an event to the stack
 	 *
-	 * @param string|Plugin_State_Change $state_event
+	 * @param class-string<Plugin_State_Change>|Plugin_State_Change $state_event
 	 * @return self
 	 * @throws Plugin_State_Exception If none Plugin_State_Change (string or object) passed or fails to create instance from valid class name.
 	 */
@@ -94,7 +112,11 @@ class Plugin_State_Controller {
 	 * @param string $file
 	 * @return self
 	 */
-	public function register_hooks( string $file ): self {
+	public function finalise( ?string $file = null ): self {
+		if ( null === $file ) {
+			$file = $this->plugin_base_file ?? $this->get_called_file();
+		}
+
 		// Activation hooks if need adding.
 		if ( $this->has_events_for_state( Activation::class ) ) {
 			register_activation_hook( $file, array( $this, 'activation' ) );
@@ -189,4 +211,6 @@ class Plugin_State_Controller {
 		throw Plugin_State_Exception::failed_to_locate_calling_file();
 		// @codeCoverageIgnoreEnd
 	}
+
+
 }

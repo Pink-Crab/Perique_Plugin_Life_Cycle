@@ -38,7 +38,7 @@ $app = (new App_Factory())
     ->boot();
 
 // Create an instance of the controller with instance of App.
-$plugin_state_controller = new Plugin_State_Controller;
+$plugin_state_controller = new Plugin_State_Controller($app, __FILE__);
 
 // Add your State_Events (as either instances or by class name)
 $plugin_state_controller->event(new SomeEvent());
@@ -53,7 +53,7 @@ The `finalise()` method can be passed the path of you main plugin file, if you h
 
 You can also define this using the fluent API.
 ```php
-Plugin_State_Controller::init($app)
+Plugin_State_Controller::init($app, __FILE__)
     ->event(new SomeEvent());
     ->event('Foo\Some_Class_Name'));
     ->finalise();

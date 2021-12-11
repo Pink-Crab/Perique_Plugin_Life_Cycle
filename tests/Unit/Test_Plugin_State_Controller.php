@@ -73,6 +73,20 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$this->assertInstanceOf( Activation_Log_Calls::class, $events[1] );
 	}
 
+	/** @testdox It should be possible to define the plugin base file path. Both when creating the instance and using a public setter. */
+	public function test_setting_base_plugin_file(): void {
+		// Set in constructor
+		$static   = Plugin_State_Controller::init( self::$app_instance, 'static_key' );
+		$instance = new Plugin_State_Controller( self::$app_instance, 'instance_key' );
+
+		$this->assertEquals( 'static_key', Objects::get_property( $static, 'plugin_base_file' ) );
+		$this->assertEquals( 'instance_key', Objects::get_property( $instance, 'plugin_base_file' ) );
+
+		// Set with method.
+		$instance->set_plugin_base_file( 'foo' );
+		$this->assertEquals( 'foo', Objects::get_property( $instance, 'plugin_base_file' ) );
+	}
+
 	/** @testdox Attempting to pass a none state change class (by string) to the Plugin State Controller should throw an exception with code 102*/
 	public function test_throws_exception_if_none_state_change_passed_as_string(): void {
 		$this->expectException( Plugin_State_Exception::class );

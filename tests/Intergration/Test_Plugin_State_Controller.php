@@ -32,7 +32,8 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
-		self::$app_instance = ( new App_Factory() )->with_wp_dice()->boot();
+		self::$app_instance   = ( new App_Factory() )->with_wp_dice()->boot();
+		$GLOBALS['wp_filter'] = array();
 	}
 
 	/**
@@ -46,6 +47,44 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 
 		// Clear all hooks used.
 		$GLOBALS['wp_actions'] = array();
+		$GLOBALS['wp_filter']  = array();
+	}
+
+	/** @testdox It should be possible to set the base path of the plugin when using the static constructor. */
+	public function test_set_plugin_base_path_on_construct(): void {
+		$state_controller = Plugin_State_Controller::init( self::$app_instance, __FILE__ );
+		$log_event        = new Activation_Log_Calls();
+		$state_controller->event( $log_event );
+		$state_controller->finalise();
+		$this->assertArrayHasKey( 'activate_' . ltrim( __FILE__, '/' ), $GLOBALS['wp_filter'] );
+	}
+
+	/** @testdox It should be possible to set the base path of the plugin using a public setter. */
+	public function test_set_plugin_base_path_on_setter(): void {
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		$state_controller->set_plugin_base_file( 'foo/foo.php' );
+		$log_event = new Activation_Log_Calls();
+		$state_controller->event( $log_event );
+		$state_controller->finalise();
+		$this->assertArrayHasKey( 'activate_foo/foo.php', $GLOBALS['wp_filter'] );
+	}
+
+	/** @testdox It should be possible to set the base path of the plugin when calling finialise. */
+	public function test_set_plugin_base_path_on_finalise(): void {
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		$log_event        = new Activation_Log_Calls();
+		$state_controller->event( $log_event );
+		$state_controller->finalise( 'bar/bar.php' );
+		$this->assertArrayHasKey( 'activate_bar/bar.php', $GLOBALS['wp_filter'] );
+	}
+
+	/** @testdox It should be possible to attempt to calculate the base path of the plugin, based on the file which calls finalise() */
+	public function test_set_plugin_base_path_on_finalise_assumed(): void {
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		$log_event        = new Activation_Log_Calls();
+		$state_controller->event( $log_event );
+		$state_controller->finalise(  );
+		$this->assertArrayHasKey( 'activate_' . ltrim( __FILE__, '/' ), $GLOBALS['wp_filter'] );
 	}
 
 	/** @testdox When the event is registered for Activation, a hook/action should be added for activation */
@@ -53,8 +92,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller = Plugin_State_Controller::init( self::$app_instance );
 		$log_event        = new Activation_Log_Calls();
 		$state_controller->event( $log_event );
-		$state_controller->register_hooks( __FILE__ );
-
+		$state_controller->finalise( __FILE__ );
 		$this->assertTrue( has_action( 'activate_' . plugin_basename( __FILE__ ) ) );
 	}
 
@@ -63,8 +101,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller = Plugin_State_Controller::init( self::$app_instance );
 		$log_event        = new Deactivation_Log_Calls();
 		$state_controller->event( $log_event );
-		$state_controller->register_hooks( __FILE__ );
-
+		$state_controller->finalise( __FILE__ );
 		$this->assertTrue( has_action( 'deactivate_' . plugin_basename( __FILE__ ) ) );
 	}
 
