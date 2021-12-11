@@ -13,19 +13,22 @@ declare(strict_types=1);
 namespace PinkCrab\Plugin_Lifecycle\Tests\Unit;
 
 use stdClass;
+use Throwable;
 use WP_UnitTestCase;
 use Gin0115\WPUnit_Helpers\Objects;
 use PinkCrab\Perique\Application\App_Factory;
-use PinkCrab\Perique\Interfaces\DI_Container;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Exception;
 use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Log_Calls;
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Mockable_DI_Container;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Deactivation_Log_Calls;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Write_Option;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_With_WPDB_Injected;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Event_Which_Will_Throw_On_Run;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Event_Which_Will_Throw_On_Construction;
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Uninstall_Event_Which_Will_Throw_On_Run;
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Deactivation_Event_Which_Will_Throw_On_Run;
 
 class Test_Plugin_State_Controller extends WP_UnitTestCase {
 
@@ -117,7 +120,8 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$this->expectExceptionCode( 104 );
 		$state_controller = Plugin_State_Controller::init( self::$app_instance );
 		$state_controller->event( Event_Which_Will_Throw_On_Run::class );
-		$state_controller->activation();
+		$state_controller->activation()(); // Manually invoke the queue
+
 	}
 
 	/** @testdox When constructing an event using the DI Container, if null is returned throw exception with code 101 */
@@ -125,20 +129,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		// Mock out app to construct all classes as null
 		$app = self::$app_instance;
 		Objects::set_property( $app, 'container', null );
-		$container = new class() implements DI_Container{
-			public function addRule( string $name, array $rule ): DI_Container {
-				return $this;
-			}
-			public function addRules( array $rules ): DI_Container {
-				return $this;
-			}
-			public function create( string $name, array $args = array() ) {
-				return null;
-			}
-			public function get( $id ) {}
-			public function has( $id ) {}
-		};
-		$app->set_container( $container );
+		$app->set_container( new Mockable_DI_Container( null ) );
 
 		$this->expectException( Plugin_State_Exception::class );
 		$this->expectExceptionCode( 101 );
@@ -151,20 +142,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		// Mock out app to construct all classes as null
 		$app = self::$app_instance;
 		Objects::set_property( $app, 'container', null );
-		$container = new class() implements DI_Container{
-			public function addRule( string $name, array $rule ): DI_Container {
-				return $this;
-			}
-			public function addRules( array $rules ): DI_Container {
-				return $this;
-			}
-			public function create( string $name, array $args = array() ) {
-				return $this;
-			}
-			public function get( $id ) {}
-			public function has( $id ) {}
-		};
-		$app->set_container( $container );
+		$app->set_container( new Mockable_DI_Container( $this ) );
 
 		$this->expectException( Plugin_State_Exception::class );
 		$this->expectExceptionCode( 101 );
@@ -190,7 +168,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller->event( Activation_Write_Option::class );
 
 		$state_controller->event( $log_event );
-		$state_controller->activation();
+		$state_controller->activation()(); // Manually invoke the queue
 
 		// Logs a . when called.
 		$this->assertNotEmpty( $log_event->calls );
@@ -204,10 +182,34 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 
 		$log_event = new Deactivation_Log_Calls();
 		$state_controller->event( $log_event );
-		$state_controller->deactivation();
+		$state_controller->deactivation()(); // Manually invoke the queue
 
 		// Logs a . when called.
 		$this->assertNotEmpty( $log_event->calls );
 		$this->assertContains( '.', $log_event->calls );
+	}
+
+	/** @testdox When an error is generated running any deactivation events, this silently should be ignored so to not prevent disabling of a plugin. */
+	public function test_deactivation_should_not_trigger_exception_if_error_running() {
+		$this->expectNotToPerformAssertions();
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		$state_controller->event( Deactivation_Event_Which_Will_Throw_On_Run::class );
+		try {
+			$state_controller->deactivation()(); // Manually invoke the queue
+		} catch ( Throwable $exception ) {
+			$this->fail( "Exception caught which should be silent {$exception->getMessage()}" );
+		}
+	}
+
+	/** @testdox When an error is generated running any uninstall events, this silently should be ignored so to not prevent disabling of a plugin. */
+	public function test_uninstall_should_not_trigger_exception_if_error_running() {
+		$this->expectNotToPerformAssertions();
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		$state_controller->event( Uninstall_Event_Which_Will_Throw_On_Run::class );
+		try {
+			$state_controller->uninstall()(); // Manually invoke the queue
+		} catch ( Throwable $exception ) {
+			$this->fail( "Exception caught which should be silent {$exception->getMessage()}" );
+		}
 	}
 }
