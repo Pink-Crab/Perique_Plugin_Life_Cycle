@@ -53,7 +53,7 @@ class Plugin_State_Exception extends Exception {
 	 * @return Plugin_State_Exception
 	 */
 	public static function failed_to_locate_calling_file(): Plugin_State_Exception {
-		return new Plugin_State_Exception( 'Could not locate the file which created the Plugin State Controller. Please define this value manually using $controller->register_hooks( string $file )', 103 );
+		return new Plugin_State_Exception( 'Could not locate the file which created the Plugin State Controller. Please define this value manually using $controller->finalise( string $file )', 103 );
 	}
 
 	/**
