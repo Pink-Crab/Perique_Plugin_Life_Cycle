@@ -14,10 +14,4 @@ namespace PinkCrab\Plugin_Lifecycle\State_Event;
 
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Change;
 
-interface Uninstall extends Plugin_State_Change {
-
-	/**
-	 * Nothing must be passed to the constructor
-	 */
-	public function __construct();
-}
+interface Uninstall extends Plugin_State_Change {}
