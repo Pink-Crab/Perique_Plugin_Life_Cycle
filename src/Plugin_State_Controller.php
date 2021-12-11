@@ -17,12 +17,16 @@ declare(strict_types=1);
 namespace PinkCrab\Plugin_Lifecycle;
 
 use Exception;
+use PinkCrab\Plugin_Lifecycle\State_Event\Uninstall_Queue;
+
+use PinkCrab\Plugin_Lifecycle\State_Event\Foo;
+
 use PinkCrab\Plugin_Lifecycle\State_Event\Deactivation;
 
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Change;
 use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
 use PinkCrab\Perique\Application\App;
-
+use PinkCrab\Plugin_Lifecycle\State_Event\Uninstall;
 
 class Plugin_State_Controller {
 
@@ -127,6 +131,17 @@ class Plugin_State_Controller {
 			register_deactivation_hook( $file, array( $this, 'deactivation' ) );
 		}
 
+		// If we have an uninstall events, add then during activation.
+		if ( $this->has_events_for_state( Uninstall::class ) ) {
+			$callback = $this->uninstall();
+			register_activation_hook(
+				$file,
+				static function() use ( $file, $callback ): void {
+					register_uninstall_hook( $file, $callback );
+				}
+			);
+		}
+
 		return $this;
 	}
 
@@ -172,7 +187,7 @@ class Plugin_State_Controller {
 	}
 
 	/**
-	 * Callback on deactivation call.
+	 * Callback on activation call.
 	 *
 	 * @return void
 	 */
@@ -181,12 +196,24 @@ class Plugin_State_Controller {
 	}
 
 	/**
-	 * Callback on activation call.
+	 * Callback on deactivation call.
 	 *
 	 * @return void
 	 */
 	public function deactivation(): void {
 		$this->trigger_for_state( Deactivation::class );
+	}
+
+	/**
+	 * Returns a static callable for use on uninstall
+	 * Callable triggers all Uninstall events when called.
+	 *
+	 * @return callable
+	 */
+	public function uninstall(): callable {
+		/** @var Uninstall[] */
+		$uninstall_events = $this->get_events_for_state( Uninstall::class );
+		return new Uninstall_Queue( $uninstall_events );
 	}
 
 	/**

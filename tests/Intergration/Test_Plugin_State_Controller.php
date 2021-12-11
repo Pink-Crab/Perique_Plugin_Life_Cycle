@@ -14,9 +14,12 @@ namespace PinkCrab\Plugin_Lifecycle\Tests\Intergration;
 
 use stdClass;
 use WP_UnitTestCase;
+use Gin0115\WPUnit_Helpers\Objects;
 use PinkCrab\Perique\Application\App_Factory;
 use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
+use PinkCrab\Plugin_Lifecycle\State_Event\Uninstall_Queue;
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Uninstall_Log_Calls;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Log_Calls;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Deactivation_Log_Calls;
 
@@ -48,7 +51,9 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		// Clear all hooks used.
 		$GLOBALS['wp_actions'] = array();
 		$GLOBALS['wp_filter']  = array();
+		\delete_option( 'uninstall_plugins' );
 	}
+
 
 	/** @testdox It should be possible to set the base path of the plugin when using the static constructor. */
 	public function test_set_plugin_base_path_on_construct(): void {
@@ -83,7 +88,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller = Plugin_State_Controller::init( self::$app_instance );
 		$log_event        = new Activation_Log_Calls();
 		$state_controller->event( $log_event );
-		$state_controller->finalise(  );
+		$state_controller->finalise();
 		$this->assertArrayHasKey( 'activate_' . ltrim( __FILE__, '/' ), $GLOBALS['wp_filter'] );
 	}
 
@@ -103,6 +108,28 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller->event( $log_event );
 		$state_controller->finalise( __FILE__ );
 		$this->assertTrue( has_action( 'deactivate_' . plugin_basename( __FILE__ ) ) );
+	}
+
+	/** @testdox It should be possible to create uninstall hooks which are added using a custom class based closure (for serialisation) */
+	public function test_can_register_uninstall_hook(): void {
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		$log_event        = new Uninstall_Log_Calls();
+		$state_controller->event( $log_event );
+		$state_controller->finalise( __FILE__ );
+		\do_action( 'activate_' . ltrim( __FILE__, '/' ) );
+
+		// Check plugin has been added to option of all with valid uninstall means.
+		$plugins = \get_option( 'uninstall_plugins' );
+		$this->assertArrayHasKey( ltrim( __FILE__, '/' ), $plugins );
+		$this->assertInstanceOf( Uninstall_Queue::class, $plugins[ ltrim( __FILE__, '/' ) ] );
+
+		// Execute callback.
+		$callback = $plugins[ ltrim( __FILE__, '/' ) ];
+		$callback();
+
+		// Check event logged execution.
+		$events = Objects::get_property( $callback, 'events' );
+		$this->assertCount( 1, $events[0]->calls );
 	}
 
 }
