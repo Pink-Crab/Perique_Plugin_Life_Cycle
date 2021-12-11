@@ -17,6 +17,8 @@ declare(strict_types=1);
 namespace PinkCrab\Plugin_Lifecycle;
 
 use Exception;
+use PinkCrab\Plugin_Lifecycle\State_Event\Deactivation;
+
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Change;
 use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
 use PinkCrab\Perique\Application\App;
@@ -93,9 +95,16 @@ class Plugin_State_Controller {
 	 * @return self
 	 */
 	public function register_hooks( string $file ): self {
+		// Activation hooks if need adding.
 		if ( $this->has_events_for_state( Activation::class ) ) {
 			register_activation_hook( $file, array( $this, 'activation' ) );
 		}
+
+		// Deactivation hooks.
+		if ( $this->has_events_for_state( Deactivation::class ) ) {
+			register_deactivation_hook( $file, array( $this, 'deactivation' ) );
+		}
+
 		return $this;
 	}
 
@@ -141,12 +150,21 @@ class Plugin_State_Controller {
 	}
 
 	/**
-	 * Callback on activation call.
+	 * Callback on deactivation call.
 	 *
 	 * @return void
 	 */
 	public function activation(): void {
 		$this->trigger_for_state( Activation::class );
+	}
+
+	/**
+	 * Callback on activation call.
+	 *
+	 * @return void
+	 */
+	public function deactivation(): void {
+		$this->trigger_for_state( Deactivation::class );
 	}
 
 	/**
