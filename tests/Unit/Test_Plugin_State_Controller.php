@@ -16,6 +16,7 @@ use stdClass;
 use Throwable;
 use WP_UnitTestCase;
 use Gin0115\WPUnit_Helpers\Objects;
+use PinkCrab\Perique\Application\App;
 use PinkCrab\Perique\Application\App_Factory;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Exception;
 use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
@@ -211,5 +212,13 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		} catch ( Throwable $exception ) {
 			$this->fail( "Exception caught which should be silent {$exception->getMessage()}" );
 		}
+	}
+
+	/** @testdox It should be possible to access the App instance from outside the controller. GH Issue 18 */
+	public function test_get_app(): void {
+		$app              = self::$app_instance;
+		$state_controller = Plugin_State_Controller::init( $app );
+		$this->assertInstanceOf( App::class, $state_controller->get_app() );
+		$this->assertSame( $app, $state_controller->get_app() );
 	}
 }

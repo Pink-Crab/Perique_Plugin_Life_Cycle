@@ -64,6 +64,15 @@ class Plugin_State_Controller {
 	}
 
 	/**
+	 * Access the internal app instance.
+	 *
+	 * @return App
+	 */
+	public function get_app(): App {
+		return $this->app;
+	}
+
+	/**
 	 * Set holds the location of the plugin base file.
 	 *
 	 * @param string $plugin_base_file  Holds the location of the plugin base file.
