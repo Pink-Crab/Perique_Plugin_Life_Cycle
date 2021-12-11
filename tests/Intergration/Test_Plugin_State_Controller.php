@@ -12,14 +12,12 @@ declare(strict_types=1);
 
 namespace PinkCrab\Plugin_Lifecycle\Tests\Intergration;
 
-use stdClass;
 use WP_UnitTestCase;
 use Gin0115\WPUnit_Helpers\Objects;
 use PinkCrab\Perique\Application\App_Factory;
 use PinkCrab\Plugin_Lifecycle\State_Change_Queue;
 use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
-use PinkCrab\Plugin_Lifecycle\State_Event\Uninstall_Queue;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Uninstall_Log_Calls;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Log_Calls;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Deactivation_Log_Calls;

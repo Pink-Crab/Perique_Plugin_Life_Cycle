@@ -16,15 +16,8 @@ declare(strict_types=1);
 
 namespace PinkCrab\Plugin_Lifecycle;
 
-use Exception;
 use PinkCrab\Plugin_Lifecycle\State_Change_Queue;
-
-use PinkCrab\Plugin_Lifecycle\State_Event\Uninstall_Queue;
-
-use PinkCrab\Plugin_Lifecycle\State_Event\Foo;
-
 use PinkCrab\Plugin_Lifecycle\State_Event\Deactivation;
-
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Change;
 use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
 use PinkCrab\Perique\Application\App;
