@@ -22,6 +22,8 @@ use PinkCrab\Plugin_Lifecycle\Plugin_State_Exception;
 use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Log_Calls;
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Mockable_DI_Container;
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Nullable_DI_Container;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Deactivation_Log_Calls;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Write_Option;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_With_WPDB_Injected;
@@ -129,20 +131,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		// Mock out app to construct all classes as null
 		$app = self::$app_instance;
 		Objects::set_property( $app, 'container', null );
-		$container = new class() implements DI_Container{
-			public function addRule( string $name, array $rule ): DI_Container {
-				return $this;
-			}
-			public function addRules( array $rules ): DI_Container {
-				return $this;
-			}
-			public function create( string $name, array $args = array() ) {
-				return null;
-			}
-			public function get( $id ) {}
-			public function has( $id ) {}
-		};
-		$app->set_container( $container );
+		$app->set_container( new Mockable_DI_Container( null ) );
 
 		$this->expectException( Plugin_State_Exception::class );
 		$this->expectExceptionCode( 101 );
@@ -155,20 +144,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		// Mock out app to construct all classes as null
 		$app = self::$app_instance;
 		Objects::set_property( $app, 'container', null );
-		$container = new class() implements DI_Container{
-			public function addRule( string $name, array $rule ): DI_Container {
-				return $this;
-			}
-			public function addRules( array $rules ): DI_Container {
-				return $this;
-			}
-			public function create( string $name, array $args = array() ) {
-				return $this;
-			}
-			public function get( $id ) {}
-			public function has( $id ) {}
-		};
-		$app->set_container( $container );
+		$app->set_container( new Mockable_DI_Container( $this ) );
 
 		$this->expectException( Plugin_State_Exception::class );
 		$this->expectExceptionCode( 101 );
@@ -208,7 +184,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 
 		$log_event = new Deactivation_Log_Calls();
 		$state_controller->event( $log_event );
-		$state_controller->deactivation()();
+		$state_controller->deactivation()(); // Manually invoke the queue
 
 		// Logs a . when called.
 		$this->assertNotEmpty( $log_event->calls );
@@ -221,7 +197,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller = Plugin_State_Controller::init( self::$app_instance );
 		$state_controller->event( Deactivation_Event_Which_Will_Throw_On_Run::class );
 		try {
-			$state_controller->deactivation()();
+			$state_controller->deactivation()(); // Manually invoke the queue
 		} catch ( Throwable $exception ) {
 			$this->fail( "Exception caught which should be silent {$exception->getMessage()}" );
 		}
@@ -233,7 +209,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller = Plugin_State_Controller::init( self::$app_instance );
 		$state_controller->event( Uninstall_Event_Which_Will_Throw_On_Run::class );
 		try {
-			$state_controller->uninstall()();
+			$state_controller->uninstall()(); // Manually invoke the queue
 		} catch ( Throwable $exception ) {
 			$this->fail( "Exception caught which should be silent {$exception->getMessage()}" );
 		}
