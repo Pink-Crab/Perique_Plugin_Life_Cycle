@@ -18,11 +18,11 @@ use PinkCrab\Perique\Application\App_Factory;
 use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Log_Calls;
-
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Deactivation_Log_Calls;
 
 class Test_Plugin_State_Controller extends WP_UnitTestCase {
 
-    use App_Helper_Trait;
+	use App_Helper_Trait;
 
 	public static $app_instance;
 
@@ -43,6 +43,9 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 	public function tearDown() {
 		parent::tearDown();
 		$this->unset_app_instance();
+
+		// Clear all hooks used.
+		$GLOBALS['wp_actions'] = array();
 	}
 
 	/** @testdox When the event is registered for Activation, a hook/action should be added for activation */
@@ -53,6 +56,16 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller->register_hooks( __FILE__ );
 
 		$this->assertTrue( has_action( 'activate_' . plugin_basename( __FILE__ ) ) );
+	}
+
+	/** @testdox When the event is registered for Deactivation, a hook/action should be added for deactivation */
+	public function test_can_register_deactivation_hook(): void {
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		$log_event        = new Deactivation_Log_Calls();
+		$state_controller->event( $log_event );
+		$state_controller->register_hooks( __FILE__ );
+
+		$this->assertTrue( has_action( 'deactivate_' . plugin_basename( __FILE__ ) ) );
 	}
 
 }

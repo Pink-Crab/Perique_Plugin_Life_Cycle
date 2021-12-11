@@ -17,6 +17,8 @@ declare(strict_types=1);
 namespace PinkCrab\Plugin_Lifecycle;
 
 use Exception;
+use PinkCrab\Plugin_Lifecycle\State_Event\Deactivation;
+
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Change;
 use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
 use PinkCrab\Perique\Application\App;
@@ -153,7 +155,7 @@ class Plugin_State_Controller {
 	 * @return void
 	 */
 	public function activation(): void {
-		$this->trigger_for_state( Deactivation::class );
+		$this->trigger_for_state( Activation::class );
 	}
 
 	/**
@@ -162,7 +164,7 @@ class Plugin_State_Controller {
 	 * @return void
 	 */
 	public function deactivation(): void {
-		$this->trigger_for_state( Activation::class );
+		$this->trigger_for_state( Deactivation::class );
 	}
 
 	/**

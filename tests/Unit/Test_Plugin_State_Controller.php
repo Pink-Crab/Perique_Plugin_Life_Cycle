@@ -21,6 +21,7 @@ use PinkCrab\Plugin_Lifecycle\Plugin_State_Exception;
 use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Log_Calls;
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Deactivation_Log_Calls;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Write_Option;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_With_WPDB_Injected;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Event_Which_Will_Throw_On_Run;
@@ -105,22 +106,6 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller->activation();
 	}
 
-	/** @testdox When an event is called, the callback should be executed. */
-	public function test_can_run_event_on_activation(): void {
-		$log_event = new Activation_Log_Calls();
-
-		$state_controller = Plugin_State_Controller::init( self::$app_instance );
-		$state_controller->event( Activation_Write_Option::class );
-
-		$log_event = new Activation_Log_Calls();
-		$state_controller->event( $log_event );
-		$state_controller->activation();
-
-		// Logs a . when called.
-		$this->assertNotEmpty( $log_event->calls );
-		$this->assertContains( '.', $log_event->calls );
-	}
-
 	/** @testdox When constructing an event using the DI Container, if null is returned throw exception with code 101 */
 	public function test_throws_exception_if_constructed_event_is_null(): void {
 		// Mock out app to construct all classes as null
@@ -128,11 +113,14 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		Objects::set_property( $app, 'container', null );
 		$container = new class() implements DI_Container{
 			public function addRule( string $name, array $rule ): DI_Container {
-				return $this;}
+				return $this;
+			}
 			public function addRules( array $rules ): DI_Container {
-				return $this;}
+				return $this;
+			}
 			public function create( string $name, array $args = array() ) {
-				return null;}
+				return null;
+			}
 			public function get( $id ) {}
 			public function has( $id ) {}
 		};
@@ -151,11 +139,14 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		Objects::set_property( $app, 'container', null );
 		$container = new class() implements DI_Container{
 			public function addRule( string $name, array $rule ): DI_Container {
-				return $this;}
+				return $this;
+			}
 			public function addRules( array $rules ): DI_Container {
-				return $this;}
+				return $this;
+			}
 			public function create( string $name, array $args = array() ) {
-				return $this;}
+				return $this;
+			}
 			public function get( $id ) {}
 			public function has( $id ) {}
 		};
@@ -167,16 +158,6 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		$state_controller->event( Activation_Write_Option::class );
 	}
 
-	/** @testdox When the event is registered for Activation, a hook/action should be added for activation */
-	public function test_can_register_activation_hook(): void {
-		$state_controller = Plugin_State_Controller::init( self::$app_instance );
-		$log_event        = new Activation_Log_Calls();
-		$state_controller->event( $log_event );
-		$state_controller->register_hooks( __FILE__ );
-
-		$this->assertTrue( has_action( 'activate_' . plugin_basename( __FILE__ ) ) );
-	}
-
 	/** @testdox It should be possible to pass dependencies which are defined DI at App setup */
 	public function test_can_inject_with_wpdb(): void {
 		$state_controller = Plugin_State_Controller::init( self::$app_instance );
@@ -184,5 +165,35 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 
 		$events = Objects::get_property( $state_controller, 'state_events' );
 		$this->assertSame( $GLOBALS['wpdb'], $events[0]->wpdb );
+	}
+
+
+	/** @testdox When an event is called, the callback should be executed. (activation*/
+	public function test_can_run_event_on_activation(): void {
+		$log_event = new Activation_Log_Calls();
+
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		$state_controller->event( Activation_Write_Option::class );
+
+		$state_controller->event( $log_event );
+		$state_controller->activation();
+
+		// Logs a . when called.
+		$this->assertNotEmpty( $log_event->calls );
+		$this->assertContains( '.', $log_event->calls );
+	}
+
+
+	/** @testdox When an event is called, the callback should be executed (deactivation). */
+	public function test_can_run_event_on_deactivation(): void {
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+
+		$log_event = new Deactivation_Log_Calls();
+		$state_controller->event( $log_event );
+		$state_controller->deactivation();
+
+		// Logs a . when called.
+		$this->assertNotEmpty( $log_event->calls );
+		$this->assertContains( '.', $log_event->calls );
 	}
 }
