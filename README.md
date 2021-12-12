@@ -24,7 +24,7 @@ Connects to an existing instance of the Perique Plugin Framework to make use of 
 
 To install, you can use composer
 ```bash
-$ composer install pinkcrab/perique-plugin-lifecycle
+$ composer require pinkcrab/perique-plugin-lifecycle
 ```
 
 ## Bootstrapping with Perique ##
