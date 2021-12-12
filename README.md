@@ -2,11 +2,11 @@
 
 A module for the PinkCrab Perique Framework which makes it easy to add subscribers which are triggered during various events within a plugins life cycle(Activation, Deactivation, Uninstall, Update etc)
 
-![alt text](https://img.shields.io/badge/Current_Version-0.0.1-yellow.svg?style=flat " ") 
+![alt text](https://img.shields.io/badge/Current_Version-0.1.1-yellow.svg?style=flat " ") 
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()![](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/workflows/GitHub_CI/badge.svg " ")
-[![codecov](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle/branch/master/graph/badge.svg?token=Xucv38xrsa)](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle)
+[![codecov](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle/branch/master/graph/badge.svg?token=Xucv38xrsa)](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle)[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/?branch=master)
 
-## Version 0.1.0 ##
+## Version 0.1.1 ##
 
 > ## PLEASE NOTE PLUGIN UPDATE EVENTS COMING SOON!
 
@@ -24,7 +24,7 @@ Connects to an existing instance of the Perique Plugin Framework to make use of 
 
 To install, you can use composer
 ```bash
-$ composer install pinkcrab/perique-plugin-lifecycle
+$ composer require pinkcrab/perique-plugin-lifecycle
 ```
 
 ## Bootstrapping with Perique ##
@@ -120,5 +120,32 @@ class Delete_Option_On_Uninstall implements Uninstall {
 ```
 > This would then be run whenever the plugin is uninstalled
 
+## Extending ##
+
+It is possible to extends this library to allow for dynamic creation of Event handlers, this can easily be achieved by using the Controller as a dependency to another service. To remove the need of passing a reference to the App to any extending class, this can be called form the controller.
+
+```php
+class My_Service {
+    protected $state_controller;
+    protected $app;
+    public function __construct(Plugin_State_Controller $state_controller){
+        $this->state_controller = $state_controller;
+        $this->app = $state_controller->get_app();
+    }
+    public function add_thingy(string $class_name): self{
+        // Use the container to create instance
+        $instance = $this->app->get_container()->create($class_name);
+        // can also use $this->app::make($class_name)
+        
+        // Whatever functionality creates an event for this
+        $event = $this->compile_event_from_thingy($instance);
+        
+        // Add the event to the controller
+        $this->state_controller->event($event);
+    }
+}
+```
+
 ## Change Log ##
+* 0.1.1 Added get_app() to main contoller
 * 0.1.0 Inital version
