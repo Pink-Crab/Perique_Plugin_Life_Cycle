@@ -118,32 +118,6 @@ class Delete_Option_On_Uninstall implements Uninstall {
 ```
 > This would then be run whenever the plugin is uninstalled
 
-## Extending ##
-
-It is possible to extends this library to allow for dynamic creation of Event handlers, this can easily be achieved by using the Controller as a dependency to another service. To remove the need of passing a reference to the App to any extending class, this can be called form the controller.
-
-```php
-class My_Service {
-    protected $state_controller;
-    protected $app;
-    public function __construct(Plugin_State_Controller $state_controller){
-        $this->state_controller = $state_controller;
-        $this->app = $state_controller->get_app();
-    }
-    public function add_thingy(string $class_name): self{
-        // Use the container to create instance
-        $instance = $this->app->get_container()->create($class_name);
-        // can also use $this->app::make($class_name)
-        
-        // Whatever functionality creates an event for this
-        $event = $this->compile_event_from_thingy($instance);
-        
-        // Add the event to the controller
-        $this->state_controller->event($event);
-    }
-}
-```
-
 ## Change Log ##
 * 0.1.1 Added get_app() to main contoller
 * 0.1.0 Inital version
