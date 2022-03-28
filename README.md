@@ -8,8 +8,6 @@ A module for the PinkCrab Perique Framework which makes it easy to add subscribe
 
 ## Version 0.1.1 ##
 
-> ## PLEASE NOTE PLUGIN UPDATE EVENTS COMING SOON!
-
 ****
 
 ## Why? ##
