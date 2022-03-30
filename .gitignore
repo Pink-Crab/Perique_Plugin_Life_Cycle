@@ -6,3 +6,4 @@ clover.xml
 /coverage-report
 plugin.php
 .vscode
+.phpunit.result.cache
