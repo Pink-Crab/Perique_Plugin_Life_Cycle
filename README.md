@@ -8,11 +8,14 @@ A module for the PinkCrab Perique Framework which makes it easy to add subscribe
 
 ## Version 0.2.0 ##
 
+<<<<<<< HEAD
 > Requires  
 > [Perique Plugin Framework 1.*](https://perique.info)  
 > Wordpress 5.5+ (tested from WP5.5 to WP5.9)  
 > PHP 7.1+ (tested from PHP7.1 to PHP8.1)  
 
+=======
+>>>>>>> master
 ****
 
 ## Why? ##
@@ -122,32 +125,6 @@ class Delete_Option_On_Uninstall implements Uninstall {
 }
 ```
 > This would then be run whenever the plugin is uninstalled
-
-## Extending ##
-
-It is possible to extends this library to allow for dynamic creation of Event handlers, this can easily be achieved by using the Controller as a dependency to another service. To remove the need of passing a reference to the App to any extending class, this can be called form the controller.
-
-```php
-class My_Service {
-    protected $state_controller;
-    protected $app;
-    public function __construct(Plugin_State_Controller $state_controller){
-        $this->state_controller = $state_controller;
-        $this->app = $state_controller->get_app();
-    }
-    public function add_thingy(string $class_name): self{
-        // Use the container to create instance
-        $instance = $this->app->get_container()->create($class_name);
-        // can also use $this->app::make($class_name)
-        
-        // Whatever functionality creates an event for this
-        $event = $this->compile_event_from_thingy($instance);
-        
-        // Add the event to the controller
-        $this->state_controller->event($event);
-    }
-}
-```
 
 ## Change Log ##
 * 0.2.0 - Improved the handling of Uninstall events and updated all dev dependencies.
