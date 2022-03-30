@@ -1,10 +1,12 @@
 # Perique - Plugin Life Cycle 
 
-A module for the PinkCrab Perique Framework which makes it easy to add subscribers which are triggered during various events within a plugins life cycle(Activation, Deactivation, Uninstall, Update etc)
+A module for the PinkCrab Perique Framework which makes it easy to add subscribers which are triggered during various events within a plugins life cycle(Activation, Deactivation, Uninstall etc)
 
 ![alt text](https://img.shields.io/badge/Current_Version-0.2.0-yellow.svg?style=flat " ") 
-[![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()![](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/workflows/GitHub_CI/badge.svg " ")
-[![codecov](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle/branch/master/graph/badge.svg?token=Xucv38xrsa)](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle)[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/?branch=master)
+[![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()
+![](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/workflows/GitHub_CI/badge.svg " ")
+[![codecov](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle/branch/master/graph/badge.svg?token=Xucv38xrsa)](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/?branch=master)
 
 ## Version 0.2.0 ##
 
