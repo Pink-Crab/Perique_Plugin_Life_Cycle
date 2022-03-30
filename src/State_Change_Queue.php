@@ -30,7 +30,7 @@ class State_Change_Queue {
 	}
 
 	/**
-	 * Runs all of the uninstall events.
+	 * Runs all of the queued events.
 	 *
 	 * @return void
 	 */

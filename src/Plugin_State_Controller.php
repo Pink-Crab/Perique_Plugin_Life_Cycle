@@ -139,12 +139,17 @@ class Plugin_State_Controller {
 		// If we have an uninstall events, add then during activation.
 		if ( $this->has_events_for_state( Uninstall::class ) ) {
 			$callback = $this->uninstall();
+
+			// Register the callback so itsits included (but wont run due to serialization issues).
 			register_activation_hook(
 				$file,
 				static function() use ( $file, $callback ): void {
 					register_uninstall_hook( $file, $callback );
 				}
 			);
+
+			// Manually re-add the uninstall hook.
+			add_action( 'uninstall_' . plugin_basename( $file ), $callback );
 		}
 
 		return $this;
