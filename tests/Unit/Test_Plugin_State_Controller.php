@@ -41,7 +41,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 	 * Sets up instance of Perique App
 	 * Only loaded with basic DI Rules.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		self::$app_instance = ( new App_Factory() )->with_wp_dice()->boot();
 	}
@@ -51,7 +51,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		$this->unset_app_instance();
 	}

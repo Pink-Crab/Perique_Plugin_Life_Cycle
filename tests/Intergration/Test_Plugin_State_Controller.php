@@ -32,7 +32,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 	 * Sets up instance of Perique App
 	 * Only loaded with basic DI Rules.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		self::$app_instance   = ( new App_Factory() )->with_wp_dice()->boot();
 		$GLOBALS['wp_filter'] = array();
@@ -43,7 +43,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		$this->unset_app_instance();
 
@@ -129,6 +129,52 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 		// Check event logged execution.
 		$events = Objects::get_property( $callback, 'events' );
 		$this->assertCount( 1, $events[0]->calls );
+		
+		// The manually added uninstall hook should have been set in globals.
+		// The one added to uninstall plugins, should 
+		$this->assertEquals(1, $this->count_registered_hook_callbacks( 'uninstall_' . \plugin_basename( ltrim( __FILE__, '/' ) ) ));
+	}
+
+	/** @testdox When the state controller is run, any uninstall hooks should also be added to the global actions */
+	public function test_uninstall_hook_added_globally_if_uninstall_events_exist(): void
+	{
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		$log_event        = new Uninstall_Log_Calls();
+		$state_controller->event( $log_event );
+		$state_controller->finalise( __FILE__ );
+
+		// Hook should be added to global actions.
+		$this->assertEquals(1, $this->count_registered_hook_callbacks( 'uninstall_' . \plugin_basename( ltrim( __FILE__, '/' ) ) ));
+	}
+
+	/** @testdox When the state controller is run, any uninstall hooks should ONLY be added to the global actions */
+	public function test_uninstall_hook_not_added_globally_if_no_uninstall_events_exist(): void
+	{
+		$state_controller = Plugin_State_Controller::init( self::$app_instance );
+		// Dont add any events.
+		$state_controller->finalise( __FILE__ );
+
+		// Hook should be added to global actions.
+		$this->assertEquals(0, $this->count_registered_hook_callbacks( 'uninstall_' . \plugin_basename( ltrim( __FILE__, '/' ) ) ));
+	}
+
+	/**
+	 * Gets a count of all callbacks for a given hook.
+	 *
+	 * @param string $hook
+	 * @return int
+	 */
+	private function count_registered_hook_callbacks( string $hook ): int {
+		global $wp_filter;
+		if ( empty( $hook ) || ! isset( $wp_filter[ $hook ] ) ) {
+			return 0;
+		}
+
+		$count = 0;
+		foreach ( $wp_filter[ $hook ] as $priroity ) {
+			$count += count( $priroity );
+		}
+		return $count;
 	}
 
 }

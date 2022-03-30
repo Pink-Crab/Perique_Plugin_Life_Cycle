@@ -2,17 +2,25 @@
 
 A module for the PinkCrab Perique Framework which makes it easy to add subscribers which are triggered during various events within a plugins life cycle(Activation, Deactivation, Uninstall, Update etc)
 
-![alt text](https://img.shields.io/badge/Current_Version-0.1.1-yellow.svg?style=flat " ") 
+![alt text](https://img.shields.io/badge/Current_Version-0.2.0-yellow.svg?style=flat " ") 
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()![](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/workflows/GitHub_CI/badge.svg " ")
 [![codecov](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle/branch/master/graph/badge.svg?token=Xucv38xrsa)](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle)[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/?branch=master)
 
-## Version 0.1.1 ##
+## Version 0.2.0 ##
 
+<<<<<<< HEAD
+> Requires  
+> [Perique Plugin Framework 1.*](https://perique.info)  
+> Wordpress 5.5+ (tested from WP5.5 to WP5.9)  
+> PHP 7.1+ (tested from PHP7.1 to PHP8.1)  
+
+=======
+>>>>>>> master
 ****
 
 ## Why? ##
 
-Makes for a simple OOP approach to handling WordPress Plugin Life Cycle events such as Activation, Deactivation, Uninstallation and Updating.
+Makes for a simple OOP approach to handling WordPress Plugin Life Cycle events such as Activation, Deactivation and Uninstallation.
 
 Connects to an existing instance of the Perique Plugin Framework to make use of the DI container and other shared services. (Please note due to the way these hooks are fired, you may not have full access to your DI Custom Rules, please read below for more details.)
 
@@ -100,7 +108,7 @@ class Update_Option_On_Deactivation implements Deactivation {
 
 All classes must implement the `PinkCrab\Plugin_Lifecycle\State_Event\Uninstall` interface.
 
-> As the Uninstall Callbacks are serialised, care must be taken when using dependencies. Ideally these should be 100% stand alone from your plugin and call only global functions and not from your plugin directly. Care should also be taken to ensure that if an exception is thrown through its execution, it doesn't prevent the plugin from being uninstalled.
+> As of 0.2.0, the Uninstall process has been improved, this will now allow the injection of dependencies as we no longer used the serialized callback held in `uninstall_plugins` held in options. 
 
 > We automatically catch any exceptions and silently fail. If you wish to handle this differently, please catch them in your own code.
 
@@ -119,5 +127,6 @@ class Delete_Option_On_Uninstall implements Uninstall {
 > This would then be run whenever the plugin is uninstalled
 
 ## Change Log ##
-* 0.1.1 Added get_app() to main contoller
-* 0.1.0 Inital version
+* 0.2.0 - Improved the handling of Uninstall events and updated all dev dependencies.
+* 0.1.1 - Added get_app() to main controller
+* 0.1.0 - Inital version
