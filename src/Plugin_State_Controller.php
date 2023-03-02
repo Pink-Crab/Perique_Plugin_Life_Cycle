@@ -91,6 +91,7 @@ class Plugin_State_Controller {
 	 * @throws Plugin_State_Exception If none Plugin_State_Change (string or object) passed or fails to create instance from valid class name.
 	 */
 	public function event( $state_event ): self {
+		/* @phpstan-ignore-next-line, as this cannot be type hinted the check exists. */
 		if ( ! is_subclass_of( $state_event, Plugin_State_Change::class ) ) {
 			throw Plugin_State_Exception::invalid_state_change_event_type( $state_event );
 		}
@@ -165,6 +166,7 @@ class Plugin_State_Controller {
 		return array_filter(
 			$this->state_events,
 			function( $e ) use ( $state ): bool {
+				/* @phpstan-ignore-next-line */
 				return is_subclass_of( $e, $state );
 			}
 		);
