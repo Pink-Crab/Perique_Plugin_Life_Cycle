@@ -3,8 +3,8 @@
 A module for the PinkCrab Perique Framework which makes it easy to add subscribers which are triggered during various events within a plugins life cycle(Activation, Deactivation, Uninstall etc)
 
 [![Latest Stable Version](http://poser.pugx.org/pinkcrab/perique-plugin-lifecycle/v)](https://packagist.org/packages/pinkcrab/perique-plugin-lifecycle) [![Total Downloads](http://poser.pugx.org/pinkcrab/perique-plugin-lifecycle/downloads)](https://packagist.org/packages/pinkcrab/perique-plugin-lifecycle) [![Latest Unstable Version](http://poser.pugx.org/pinkcrab/perique-plugin-lifecycle/v/unstable)](https://packagist.org/packages/pinkcrab/perique-plugin-lifecycle) [![License](http://poser.pugx.org/pinkcrab/perique-plugin-lifecycle/license)](https://packagist.org/packages/pinkcrab/perique-plugin-lifecycle) [![PHP Version Require](http://poser.pugx.org/pinkcrab/perique-plugin-lifecycle/require/php)](https://packagist.org/packages/pinkcrab/perique-plugin-lifecycle)
-![GitHub contributors](https://img.shields.io/github/contributors/ink-Crab/Perique_Plugin_Life_Cycle?label=Contributors)
-![GitHub issues](https://img.shields.io/github/issues-raw/ink-Crab/Perique_Plugin_Life_Cycle)
+![GitHub contributors](https://img.shields.io/github/contributors/Pink-Crab/Perique_Plugin_Life_Cycle?label=Contributors)
+![GitHub issues](https://img.shields.io/github/issues-raw/Pink-Crab/Perique_Plugin_Life_Cycle)
 
 [![codecov](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle/branch/master/graph/badge.svg?token=Xucv38xrsa)](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/?branch=master)
