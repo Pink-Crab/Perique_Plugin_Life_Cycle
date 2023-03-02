@@ -52,8 +52,8 @@ $plugin_state_controller = new Plugin_State_Controller($app, __FILE__);
 
 // Add your State_Events (as either instances or by class name)
 $plugin_state_controller->event(new SomeEvent());
-$plugin_state_controller->event('Foo\Some_Class_Name'));
-$plugin_state_controller->event(Some_Other_Class::class));
+$plugin_state_controller->event('Foo\Some_Class_Name');
+$plugin_state_controller->event(Some_Other_Class::class);
 $plugin_state_controller->finalise();
 ```
 The `finalise()` method can be passed the path of you main plugin file, if you have chosen to bootstrap the Application in an additional file. If left empty, will grab the base plugin filename automatically (based on where you created the Controller instance).
@@ -66,7 +66,7 @@ You can also define this using the fluent API.
 ```php
 Plugin_State_Controller::init($app, __FILE__)
     ->event(new SomeEvent());
-    ->event('Foo\Some_Class_Name'));
+    ->event('Foo\Some_Class_Name');
     ->finalise();
 ```
 
