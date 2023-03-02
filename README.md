@@ -2,18 +2,19 @@
 
 A module for the PinkCrab Perique Framework which makes it easy to add subscribers which are triggered during various events within a plugins life cycle(Activation, Deactivation, Uninstall etc)
 
-![alt text](https://img.shields.io/badge/Current_Version-0.2.0-yellow.svg?style=flat " ") 
-[![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()
-![](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/workflows/GitHub_CI/badge.svg " ")
+[![Latest Stable Version](http://poser.pugx.org/pinkcrab/perique-plugin-lifecycle/v)](https://packagist.org/packages/pinkcrab/perique-plugin-lifecycle) [![Total Downloads](http://poser.pugx.org/pinkcrab/perique-plugin-lifecycle/downloads)](https://packagist.org/packages/pinkcrab/perique-plugin-lifecycle) [![Latest Unstable Version](http://poser.pugx.org/pinkcrab/perique-plugin-lifecycle/v/unstable)](https://packagist.org/packages/pinkcrab/perique-plugin-lifecycle) [![License](http://poser.pugx.org/pinkcrab/perique-plugin-lifecycle/license)](https://packagist.org/packages/pinkcrab/perique-plugin-lifecycle) [![PHP Version Require](http://poser.pugx.org/pinkcrab/perique-plugin-lifecycle/require/php)](https://packagist.org/packages/pinkcrab/perique-plugin-lifecycle)
+![GitHub contributors](https://img.shields.io/github/contributors/ink-Crab/Perique_Plugin_Life_Cycle?label=Contributors)
+![GitHub issues](https://img.shields.io/github/issues-raw/ink-Crab/Perique_Plugin_Life_Cycle)
+
 [![codecov](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle/branch/master/graph/badge.svg?token=Xucv38xrsa)](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/27aa086ac22f0996516a/maintainability)](https://codeclimate.com/github/Pink-Crab/Perique_Plugin_Life_Cycle/maintainability)
 
-## Version 0.2.0 ##
 
 > Requires  
-> [Perique Plugin Framework 1.*](https://perique.info)  
-> Wordpress 5.5+ (tested from WP5.5 to WP5.9)  
-> PHP 7.1+ (tested from PHP7.1 to PHP8.1)  
+> [Perique Plugin Framework 1.3.*](https://perique.info)  
+> Wordpress 5.5+ (tested from WP5.9 to WP6.1)  
+> PHP 7.2+ (tested from PHP7.2 to PHP8.1)  
 
 ****
 
@@ -126,6 +127,7 @@ class Delete_Option_On_Uninstall implements Uninstall {
 > This would then be run whenever the plugin is uninstalled
 
 ## Change Log ##
+* 0.2.1 - Updated dev dependencies and GH pipeline.
 * 0.2.0 - Improved the handling of Uninstall events and updated all dev dependencies.
 * 0.1.1 - Added get_app() to main controller
 * 0.1.0 - Inital version
