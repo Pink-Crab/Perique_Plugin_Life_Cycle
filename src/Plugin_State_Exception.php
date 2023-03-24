@@ -71,4 +71,23 @@ class Plugin_State_Exception extends Exception {
 		);
 		return new Plugin_State_Exception( $message, 104 );
 	}
+
+	/**
+	 * Exception for missing plugin base file name.
+	 * @code 105
+	 * @param ?string $error
+	 * @return Plugin_State_Exception
+	 */
+	public static function invalid_plugin_base_file( $error ): Plugin_State_Exception {
+		return new Plugin_State_Exception( is_string( $error ) ? $error : 'No plugin base file name passed.', 105 );
+	}
+
+	/**
+	 * Exception for missing controller
+	 * @code 106
+	 * @return Plugin_State_Exception
+	 */
+	public static function missing_controller(): Plugin_State_Exception {
+		return new Plugin_State_Exception( 'No Plugin State Controller passed.', 106 );
+	}
 }
