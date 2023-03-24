@@ -1,3 +1,5 @@
+![logo](.github/assets/Plugin-Lifecyle.jpg "Pink Crab")
+
 # Perique - Plugin Life Cycle 
 
 A module for the PinkCrab Perique Framework which makes it easy to add subscribers which are triggered during various events within a plugins life cycle(Activation, Deactivation, Uninstall etc)
