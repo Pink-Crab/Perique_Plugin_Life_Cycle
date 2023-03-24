@@ -17,6 +17,8 @@ try {
 	// Do nothing if fails to find env as not used in pipeline.
 }
 
+define( 'FIXTURES_DIR', __DIR__ . '/Fixtures' );
+
 tests_add_filter(
 	'muplugins_loaded',
 	function() {

@@ -14,11 +14,29 @@ namespace PinkCrab\Plugin_Lifecycle\Tests\Unit;
 
 use WP_UnitTestCase;
 use PinkCrab\Plugin_Lifecycle\State_Change_Queue;
+use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Deactivation_Log_Calls;
 use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Deactivation_Event_Which_Will_Throw_On_Run;
 
 class Test_State_Change_Queue extends WP_UnitTestCase {
 
+	use App_Helper_Trait;
+
+
+	/**
+	 * Unsets the app instance, to be rebuilt next time.
+	 *
+	 * @return void
+	 */
+	public function tearDown(): void {
+		parent::tearDown();
+		self::reset_event_counters();
+	}
+
+	/**
+	 * Ensure 
+	 */
+	
 	/** @testdox If a deactivation call fails, this should happen silently and let all other events be triggered. */
 	public function test_will_silently_let_deactivation_call_fail_and_continue(): void {
 		$deactivate_fail = new Deactivation_Event_Which_Will_Throw_On_Run();
@@ -29,7 +47,7 @@ class Test_State_Change_Queue extends WP_UnitTestCase {
 		$queue();
 
 		// Log calls should have been called.
-		$this->assertCount( 1, $deactivate_pass->calls );
+		$this->assertCount( 1, Deactivation_Log_Calls::$calls );
 	}
 
 }
