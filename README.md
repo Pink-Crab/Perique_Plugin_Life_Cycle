@@ -17,8 +17,8 @@ A module for the PinkCrab Perique Framework which makes it easy to add subscribe
 
 > Requires  
 > [Perique Plugin Framework 2.0.*](https://perique.info)  
-> Wordpress 5.5+ (tested from WP5.9 to WP6.1)  
-> PHP 7.4+ (tested from PHP7.2 to PHP8.1)  
+> Wordpress 5.9+ (tested from WP5.9 to WP6.1)  
+> PHP 7.4+ (tested from PHP7.4 to PHP8.1)  
 
 ****
 
