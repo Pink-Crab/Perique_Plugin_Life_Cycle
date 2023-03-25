@@ -26,7 +26,7 @@ A module for the PinkCrab Perique Framework which makes it easy to add subscribe
 
 Makes for a simple OOP approach to handling WordPress Plugin Life Cycle events such as Activation, Deactivation and Uninstallation.
 
-Connects to an existing instance of the Perique Plugin Framework to make use of the DI container and other shared services. (Please note due to the way these hooks are fired, you may not have full access to your DI Custom Rules, please read below for more details.)
+Connects to an existing instance of the Perique Plugin Framework to make use of the DI container and other shared services. (Please note due to the way these hooks are fired, you may not have full access to your DI Custom Rules, please [read below for more details](#Timings).)
 
 ****
 
@@ -100,8 +100,6 @@ class Update_Option_On_Deactivation implements Deactivation {
 
 All classes must implement the `PinkCrab\Plugin_Lifecycle\State_Event\Uninstall` interface.
 
-> As of 0.2.0, the Uninstall process has been improved, this will now allow the injection of dependencies as we no longer used the serialized callback held in `uninstall_plugins` held in options. 
-
 > We automatically catch any exceptions and silently fail. If you wish to handle this differently, please catch them in your own code.
 
 
@@ -117,6 +115,10 @@ class Delete_Option_On_Uninstall implements Uninstall {
 }
 ```
 > This would then be run whenever the plugin is uninstalled
+
+## Timings
+
+The events are triggered before the `init` hook is called, so Perique is only partially booted when these are run. This means that you will have access to the `DI_Container` and `App_Config` but only custom rules that have been added directly, any rules added via 3rd parties using hooks, will not be available. Try to make events as simple as possible to avoid errors. 
 
 ## Extending 
 
