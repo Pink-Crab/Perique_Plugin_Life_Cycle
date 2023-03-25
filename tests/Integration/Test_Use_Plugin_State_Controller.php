@@ -168,6 +168,42 @@ class Test_Use_Plugin_State_Controller extends WP_UnitTestCase {
 		$this->assertEquals( 0, $this->count_registered_hook_callbacks( 'uninstall_' . $this->get_plugin_base_file() ) );
 	}
 
+	/** @testdox It should be possible to use actions to access the modules both before and after the finalise process is run  */
+	public function test_can_use_actions_to_access_modules(): void {
+		
+		add_action(Plugin_Life_Cycle::PRE_FINALISE, function(Plugin_Life_Cycle $module) {
+			// Add to the log before finalise.
+			Activation_Log_Calls::$calls[] = 'pre-finalise ' . get_class($module);
+			$this->assertInstanceOf( Plugin_Life_Cycle::class, $module );
+		});
+
+		add_action(Plugin_Life_Cycle::POST_FINALISE, function(Plugin_Life_Cycle $module) {
+			// Add to the log after finalise.
+			Activation_Log_Calls::$calls[] = 'post-finalise ' . get_class($module);
+			$this->assertInstanceOf( Plugin_Life_Cycle::class, $module );
+		});
+		
+		$app = self::$app_instance
+			->module(
+				Plugin_Life_Cycle::class,
+				fn( Plugin_Life_Cycle $e) => $e
+					->event( Activation_Log_Calls::class )
+					->plugin_base_file( self::PLUGIN_BASE_FILE )
+			);
+
+		$app->boot();
+
+		// Check actions called.
+		$this->assertCount( 2, Activation_Log_Calls::$calls );
+
+		// Check actions called in correct order.
+		$this->assertEquals( 'pre-finalise ' . Plugin_Life_Cycle::class, Activation_Log_Calls::$calls[0] );
+		$this->assertEquals( 'post-finalise ' . Plugin_Life_Cycle::class, Activation_Log_Calls::$calls[1] );
+
+		// Check actions called with correct module.
+		$this->assertTrue( has_action( 'activate_' . $this->get_plugin_base_file() ) );
+	}
+
 	/**
 	 * Gets a count of all callbacks for a given hook.
 	 *

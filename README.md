@@ -118,6 +118,55 @@ class Delete_Option_On_Uninstall implements Uninstall {
 ```
 > This would then be run whenever the plugin is uninstalled
 
+## Extending 
+
+It is possible to create other modules which can be used to add additional events and trigger other actions both before and after the finalise() method is called. This is useful if you wish to add additional events, or trigger other actions.
+
+### Adding events
+
+You can use the `Plugin_Life_Cycle::STATE_EVENTS` filter to add additional methods.
+> Const `Plugin_Life_Cycle::STATE_EVENTS` = 'PinkCrab\Plugin_Lifecycle\State_Events'
+
+```php
+add_filter(
+    Plugin_Life_Cycle::STATE_EVENTS,
+    function( array $events ): array {
+        $events[] = SomeEvent::class;
+        return $events;
+    }
+);
+```
+### Triggering actions before finalise
+
+You can use the `Plugin_Life_Cycle::PRE_FINALISE` filter to trigger actions before the finalise() method is called.
+
+> Const `Plugin_Life_Cycle::PRE_FINALISE` = 'PinkCrab\Plugin_Lifecycle\Pre_Finalise'
+
+```php
+add_action(
+    Plugin_Life_Cycle::PRE_FINALISE,
+    function( Plugin_Life_Cycle $module ): void {
+        // Do something before finalise is called.
+    }
+);
+```
+
+### Triggering actions after finalise
+
+You can use the `Plugin_Life_Cycle::POST_FINALISE` filter to trigger actions after the finalise() method is called.
+
+> Const `Plugin_Life_Cycle::POST_FINALISE` = 'PinkCrab\Plugin_Lifecycle\Post_Finalise'
+
+```php
+add_action(
+    Plugin_Life_Cycle::POST_FINALISE,
+    function( Plugin_Life_Cycle $module ): void {
+        // Do something after finalise is called.
+    }
+);
+```
+
+
 ## Change Log ##
 * 1.0.0 - Updated for Perique V2 and implements the new Module system.
 * 0.2.1 - Updated dev dependencies and GH pipeline.
