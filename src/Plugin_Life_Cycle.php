@@ -28,7 +28,9 @@ use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
 
 class Plugin_Life_Cycle implements Module {
 
-	public const STATE_EVENTS = 'PinkCrab\Plugin_Lifecycle\State_Events';
+	public const STATE_EVENTS  = 'PinkCrab\Plugin_Lifecycle\State_Events';
+	public const PRE_FINALISE  = 'PinkCrab\Plugin_Lifecycle\Pre_Finalise';
+	public const POST_FINALISE = 'PinkCrab\Plugin_Lifecycle\Post_Finalise';
 
 	/** @var class-string<Plugin_State_Change>[] */
 	private array $events                              = array();
@@ -97,19 +99,33 @@ class Plugin_Life_Cycle implements Module {
 			throw Plugin_State_Exception::missing_controller();
 		}
 
-		// Get all events, allowing other modules to extend and add their own.
-		$events = apply_filters( self::STATE_EVENTS, $this->events );
-		$events = array_unique( $events );
-		$events = array_filter( $events, 'is_string' );
-		$events = array_filter( $events, fn( $event ) => is_subclass_of( $event, Plugin_State_Change::class ) );
+		// Trigger the pre action.
+		do_action( self::PRE_FINALISE, $this );
 
 		// Add events to the controller.
-		foreach ( $events as $event ) {
+		foreach ( $this->get_events() as $event ) {
 			$this->state_controller->event( $event );
 		}
 
 		// Register the state controller.
 		$this->state_controller->finalise();
+
+		// Trigger the post action.
+		do_action( self::POST_FINALISE, $this );
+	}
+
+
+	/**
+	 * Get all the events, allowing other modules to extend and add their own.
+	 *
+	 * @return class-string<Plugin_State_Change>[]
+	 */
+	public function get_events(): array {
+		$events = apply_filters( self::STATE_EVENTS, $this->events );
+		$events = array_unique( $events );
+		$events = array_filter( $events, 'is_string' );
+		$events = array_filter( $events, fn( $event ) => is_subclass_of( $event, Plugin_State_Change::class ) );
+		return $events;
 	}
 
 	## Unused methods

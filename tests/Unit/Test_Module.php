@@ -18,8 +18,12 @@ use PinkCrab\Perique\Application\App_Config;
 use PinkCrab\Perique\Application\App_Factory;
 use PinkCrab\Perique\Interfaces\DI_Container;
 use PinkCrab\Plugin_Lifecycle\Plugin_Life_Cycle;
+use PinkCrab\Plugin_Lifecycle\State_Change_Queue;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Exception;
+use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
 use PinkCrab\Plugin_Lifecycle\Tests\App_Helper_Trait;
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Activation_Log_Calls;
+use PinkCrab\Plugin_Lifecycle\Tests\Fixtures\Deactivation_Log_Calls;
 
 class Test_Moudle extends WP_UnitTestCase {
 
@@ -86,5 +90,47 @@ class Test_Moudle extends WP_UnitTestCase {
 			$this->createMock( DI_Container::class ),
 		);
 
+	}
+
+	/** @testdox It should be possible to add additonal events using the event filter */
+	public function test_boot_with_additional_events(): void {
+		// Added via filter.
+		add_filter(
+			Plugin_Life_Cycle::STATE_EVENTS,
+			function( array $events ) {
+				$events[] = Activation_Log_Calls::class;
+				$events[] = Deactivation_Log_Calls::class;
+				return $events;
+			}
+		);
+
+		$module = new Plugin_Life_Cycle();
+		$events = $module->get_events();
+
+		$this->assertCount( 2, $events );
+		$this->assertContains( Activation_Log_Calls::class, $events );
+		$this->assertContains( Deactivation_Log_Calls::class, $events );
+	}
+
+	/** @testdox When using the events filter, only valid class names of events should be passed through. */
+	public function test_boot_with_invalid_events_throws_exception(): void {
+
+		// Added via filter.
+		add_filter(
+			Plugin_Life_Cycle::STATE_EVENTS,
+			function( array $events ) {
+				$events[] = 'Not a class';               // Not a class.
+				$events[] = State_Change_Queue::class;   // Not an event.
+				$events[] = Activation_Log_Calls::class;
+				$events[] = Activation_Log_Calls::class; // Duplicate
+
+				return $events;
+			}
+		);
+
+		$module = new Plugin_Life_Cycle();
+		$events = $module->get_events();
+		$this->assertCount( 1, $events );
+		$this->assertContains( Activation_Log_Calls::class, $events );
 	}
 }
