@@ -199,6 +199,9 @@ class Test_Use_Plugin_State_Controller extends WP_UnitTestCase {
 		// Check actions called in correct order.
 		$this->assertEquals( 'pre-finalise ' . Plugin_Life_Cycle::class, Activation_Log_Calls::$calls[0] );
 		$this->assertEquals( 'post-finalise ' . Plugin_Life_Cycle::class, Activation_Log_Calls::$calls[1] );
+
+		// Check actions called with correct module.
+		$this->assertTrue( has_action( 'activate_' . $this->get_plugin_base_file() ) );
 	}
 
 	/**
