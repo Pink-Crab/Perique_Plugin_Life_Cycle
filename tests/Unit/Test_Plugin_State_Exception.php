@@ -90,4 +90,13 @@ class Test_Plugin_State_Exception extends WP_UnitTestCase {
 
 		throw Plugin_State_Exception::failed_to_locate_calling_file();
 	}
+
+	/** @testdox If the Controller is not defined there should be a relevant exceptions. */
+	public function test_controller_not_defined():void {
+		$this->expectExceptionCode( 105 );
+		$this->expectException( Plugin_State_Exception::class );
+		$this->expectExceptionMessage( 'The Plugin State Controller is not defined.' );
+
+		throw Plugin_State_Exception::controller_not_defined();
+	}
 }

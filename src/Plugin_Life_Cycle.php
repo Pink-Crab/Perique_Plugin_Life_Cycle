@@ -18,8 +18,6 @@ namespace PinkCrab\Plugin_Lifecycle;
 
 use PinkCrab\Loader\Hook_Loader;
 use PinkCrab\Perique\Application\Hooks;
-
-use PinkCrab\Perique\Application\App;
 use PinkCrab\Perique\Interfaces\Module;
 use PinkCrab\Perique\Application\App_Config;
 use PinkCrab\Perique\Interfaces\DI_Container;
