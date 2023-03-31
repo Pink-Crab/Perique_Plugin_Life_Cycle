@@ -75,7 +75,7 @@ class Test_Plugin_State_Exception extends WP_UnitTestCase {
 		throw Plugin_State_Exception::error_running_state_change_event( new Activation_Log_Calls(), $exception );
 	}
 
-    /** @testdox It should be possible to throw an exception easily when running state event without a valid exception*/
+	/** @testdox It should be possible to throw an exception easily when running state event without a valid exception*/
 	public function test_error_running_state_change_event_without_exception():void {
 		$this->expectExceptionCode( 104 );
 		$this->expectException( Plugin_State_Exception::class );
@@ -89,5 +89,35 @@ class Test_Plugin_State_Exception extends WP_UnitTestCase {
 		$this->expectException( Plugin_State_Exception::class );
 
 		throw Plugin_State_Exception::failed_to_locate_calling_file();
+	}
+
+
+	/** @testdox If there is no plugin base file define, it should be possible to throw the relevant exception with a custom message. */
+	public function test_invalid_plugin_base_file():void {
+		$this->expectExceptionCode( 105 );
+		$this->expectException( Plugin_State_Exception::class );
+		$this->expectExceptionMessage( 'MOCK' );
+
+		throw Plugin_State_Exception::invalid_plugin_base_file( 'MOCK' );
+	}
+
+	/** @testdox If there is no plugin base file define, it should be possible to throw the relevant exception with a default message. */
+	public function test_invalid_plugin_base_file_default_message():void {
+		$this->expectExceptionCode( 105 );
+		$this->expectException( Plugin_State_Exception::class );
+		$this->expectExceptionMessage( 'No plugin base file name passed.' );
+
+		throw Plugin_State_Exception::invalid_plugin_base_file();
+	}
+
+
+
+	/** @testdox If the Controller is not defined there should be a relevant exceptions. */
+	public function test_controller_not_defined():void {
+		$this->expectExceptionCode( 106 );
+		$this->expectException( Plugin_State_Exception::class );
+		$this->expectExceptionMessage( 'No Plugin State Controller passed.' );
+
+		throw Plugin_State_Exception::missing_controller();
 	}
 }

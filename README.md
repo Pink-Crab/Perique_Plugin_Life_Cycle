@@ -11,7 +11,7 @@ A module for the PinkCrab Perique Framework which makes it easy to add subscribe
 [![WordPress 5.9 Test Suite [PHP7.4-8.1]](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/actions/workflows/WP_5_9.yaml/badge.svg)](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/actions/workflows/WP_5_9.yaml)
 [![WordPress 6.0 Test Suite [PHP7.4-8.1]](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/actions/workflows/WP_6_0.yaml/badge.svg)](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/actions/workflows/WP_6_0.yaml)
 [![WordPress 6.1 Test Suite [PHP7.4-8.2]](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/actions/workflows/WP_6_1.yaml/badge.svg)](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/actions/workflows/WP_6_1.yaml)
-[![WordPress 6.12 Test Suite [PHP7.4-8.2]](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/actions/workflows/WP_6_2.yaml/badge.svg)](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/actions/workflows/WP_6_2.yaml)
+[![WordPress 6.2 Test Suite [PHP7.4-8.2]](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/actions/workflows/WP_6_2.yaml/badge.svg)](https://github.com/Pink-Crab/Perique_Plugin_Life_Cycle/actions/workflows/WP_6_2.yaml)
 
 [![codecov](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle/branch/master/graph/badge.svg?token=Xucv38xrsa)](https://codecov.io/gh/Pink-Crab/Perique_Plugin_Life_Cycle)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Pink-Crab/Perique_Plugin_Life_Cycle/?branch=master)
