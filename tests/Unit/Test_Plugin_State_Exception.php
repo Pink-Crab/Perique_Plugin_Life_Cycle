@@ -110,8 +110,6 @@ class Test_Plugin_State_Exception extends WP_UnitTestCase {
 		throw Plugin_State_Exception::invalid_plugin_base_file();
 	}
 
-
-
 	/** @testdox If the Controller is not defined there should be a relevant exceptions. */
 	public function test_controller_not_defined():void {
 		$this->expectExceptionCode( 106 );
