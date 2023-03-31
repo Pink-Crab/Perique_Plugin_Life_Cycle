@@ -78,7 +78,7 @@ class Plugin_State_Exception extends Exception {
 	 * @param ?string $error
 	 * @return Plugin_State_Exception
 	 */
-	public static function invalid_plugin_base_file( $error ): Plugin_State_Exception {
+	public static function invalid_plugin_base_file( $error = null ): Plugin_State_Exception {
 		return new Plugin_State_Exception( is_string( $error ) ? $error : 'No plugin base file name passed.', 105 );
 	}
 
