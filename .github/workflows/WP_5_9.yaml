@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master, develop, perique-v2-dev ]
+    branches: [ master, develop ]
 
 jobs:
   build:
