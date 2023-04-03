@@ -18,9 +18,9 @@ use PinkCrab\Plugin_Lifecycle\State_Event\Deactivation;
 
 class Deactivation_Log_Calls implements Deactivation {
 
-	public $calls = array();
+	public static $calls = array();
 
 	public function run(): void {
-		$this->calls[] = '.';
+		self::$calls[] = '.';
 	}
 }

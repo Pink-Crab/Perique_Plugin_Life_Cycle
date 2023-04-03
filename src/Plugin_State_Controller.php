@@ -20,17 +20,17 @@ use PinkCrab\Plugin_Lifecycle\State_Change_Queue;
 use PinkCrab\Plugin_Lifecycle\State_Event\Deactivation;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Change;
 use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
-use PinkCrab\Perique\Application\App;
+use PinkCrab\Perique\Interfaces\DI_Container;
 use PinkCrab\Plugin_Lifecycle\State_Event\Uninstall;
 
 class Plugin_State_Controller {
 
 	/**
-	 * Instance of App
+	 * Instance of DI_Container
 	 *
-	 * @var App
+	 * @var DI_Container
 	 */
-	protected $app;
+	protected DI_Container $container;
 
 	/**
 	 * Hold all events which are fired during the plugins
@@ -43,73 +43,41 @@ class Plugin_State_Controller {
 	/**
 	 * Holds the location of the plugin base file.
 	 *
-	 * @var string|null
+	 * @var string
 	 */
-	protected $plugin_base_file = null;
+	protected $plugin_base_file;
 
-	public function __construct( App $app, ?string $plugin_base_file = null ) {
-		$this->app              = $app;
+	public function __construct( DI_Container $container, string $plugin_base_file ) {
+		$this->container        = $container;
 		$this->plugin_base_file = $plugin_base_file;
-	}
-
-	/**
-	 * Lazy static constructor
-	 *
-	 * @param App $app
-	 * @return self
-	 */
-	public static function init( App $app, ?string $plugin_base_file = null ): self {
-		$instance = new self( $app, $plugin_base_file );
-		return $instance;
-	}
-
-	/**
-	 * Access the internal app instance.
-	 *
-	 * @return App
-	 */
-	public function get_app(): App {
-		return $this->app;
-	}
-
-	/**
-	 * Set holds the location of the plugin base file.
-	 *
-	 * @param string $plugin_base_file  Holds the location of the plugin base file.
-	 * @return self
-	 */
-	public function set_plugin_base_file( string $plugin_base_file ): self {
-		$this->plugin_base_file = $plugin_base_file;
-		return $this;
 	}
 
 	/**
 	 * Adds an event to the stack
 	 *
-	 * @param class-string<Plugin_State_Change>|Plugin_State_Change $state_event
+	 * @param class-string<Plugin_State_Change> $state_event
 	 * @return self
 	 * @throws Plugin_State_Exception If none Plugin_State_Change (string or object) passed or fails to create instance from valid class name.
 	 */
-	public function event( $state_event ): self {
+	public function event( string $state_event ): self {
+		// Cache the event class name.
+		$state_event_string = $state_event;
+
 		/* @phpstan-ignore-next-line, as this cannot be type hinted the check exists. */
 		if ( ! is_subclass_of( $state_event, Plugin_State_Change::class ) ) {
 			throw Plugin_State_Exception::invalid_state_change_event_type( $state_event );
 		}
-		// If its a string, attempt to create via DI container.
-		if ( is_string( $state_event ) ) {
-			$state_event_string = $state_event;
 
-			try {
-				/** @var Plugin_State_Change|null */
-				$state_event = $this->app->get_container()->create( $state_event );
-			} catch ( \Throwable $th ) {
-				throw Plugin_State_Exception::failed_to_create_state_change_event( $state_event_string );
-			}
+		try {
+			/** @var Plugin_State_Change|null */
+			$state_event = $this->container->create( $state_event );
+		} catch ( \Throwable $th ) {
+			throw Plugin_State_Exception::failed_to_create_state_change_event( $state_event_string );
+		}
 
-			// Throw exception if failed to create
-			if ( null === $state_event || ! is_a( $state_event, Plugin_State_Change::class ) ) {
-				throw Plugin_State_Exception::failed_to_create_state_change_event( $state_event_string );
-			}
+		// Throw exception if failed to create
+		if ( null === $state_event || ! is_a( $state_event, Plugin_State_Change::class ) ) {
+			throw Plugin_State_Exception::failed_to_create_state_change_event( $state_event_string );
 		}
 		$this->state_events[] = $state_event;
 		return $this;
@@ -118,15 +86,12 @@ class Plugin_State_Controller {
 	/**
 	 * Registers all life cycle hooks.
 	 *
-	 * @param string $file
 	 * @return self
 	 * @throws Plugin_State_Exception [103] failed_to_locate_calling_file()
 	 */
-	public function finalise( ?string $file = null ): self {
-		if ( null === $file ) {
-			$file = $this->plugin_base_file ?? $this->get_called_file();
-		}
-
+	public function finalise(): self {
+		$file = $this->plugin_base_file;
+		// dump($file);
 		// Activation hooks if need adding.
 		if ( $this->has_events_for_state( Activation::class ) ) {
 			register_activation_hook( $file, $this->activation() );
@@ -164,7 +129,7 @@ class Plugin_State_Controller {
 	 */
 	private function get_events_for_state( string $state ): array {
 		return array_filter(
-			$this->state_events,
+			apply_filters( Plugin_Life_Cycle::EVENT_LIST, $this->state_events ),
 			function( $e ) use ( $state ): bool {
 				/* @phpstan-ignore-next-line */
 				return is_subclass_of( $e, $state );
@@ -208,32 +173,5 @@ class Plugin_State_Controller {
 	public function uninstall(): State_Change_Queue {
 		return new State_Change_Queue( ...$this->get_events_for_state( Uninstall::class ) );
 	}
-
-	/**
-	 * Attempts to get the name of the file which called the class.
-	 *
-	 * @return string
-	 * @throws Plugin_State_Exception If can not locate path which created instance of controller.
-	 */
-	protected function get_called_file(): string {
-		$backtrace = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
-
-		$backtrace_count = count( $backtrace );
-		for ( $i = 0; $i < $backtrace_count; $i++ ) {
-			if ( $backtrace[ $i ]['function'] === __FUNCTION__
-			&& \array_key_exists( 'class', $backtrace[ $i ] )
-			&& $backtrace[ $i ]['class'] === get_class()
-			&& \array_key_exists( ( $i + 1 ), $backtrace )
-			&& \array_key_exists( 'file', $backtrace[ $i + 1 ] )
-
-			) {
-				return $backtrace[ $i + 1 ]['file'];
-			}
-		}
-		// @codeCoverageIgnoreStart
-		throw Plugin_State_Exception::failed_to_locate_calling_file();
-		// @codeCoverageIgnoreEnd
-	}
-
 
 }
