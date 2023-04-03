@@ -1,4 +1,4 @@
-![logo](.github/assets/Plugin-Lifecyle.jpg "Pink Crab")
+![logo](.github/assets/Plugin-Lifecyle.jpg "PinkCrab Perique Plugin Life Cycle")
 
 # Perique - Plugin Life Cycle 
 
