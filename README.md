@@ -188,7 +188,8 @@ add_action(
 
 
 ## Change Log ##
-* 1.0.0 - Updated for Perique V2 and implements the new Module system.
+* 2.0.0 - Updated for Perique V2 and implements the new Module system.
+* 1.0.0 - *skipped*
 * 0.2.1 - Updated dev dependencies and GH pipeline.
 * 0.2.0 - Improved the handling of Uninstall events and updated all dev dependencies.
 * 0.1.1 - Added get_app() to main controller
