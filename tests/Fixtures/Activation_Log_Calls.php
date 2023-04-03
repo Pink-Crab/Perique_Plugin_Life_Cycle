@@ -16,9 +16,9 @@ use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
 
 class Activation_Log_Calls implements Activation {
 
-	public $calls = array();
+	public static $calls = array();
 
 	public function run(): void {
-		$this->calls[] = '.';
+		self::$calls[] = '.';
 	}
 }

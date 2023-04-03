@@ -16,7 +16,7 @@ use PinkCrab\Plugin_Lifecycle\State_Event\Activation;
 
 class Activation_With_WPDB_Injected implements Activation {
 
-	public $log;
+	public static $log;
 	public $wpdb;
 
 	public function __construct( \wpdb $wpdb ) {
@@ -24,6 +24,6 @@ class Activation_With_WPDB_Injected implements Activation {
 	}
 
 	public function run(): void {
-		$this->log = is_a( $this->wpdb, 'wpdb' );
+		self::$log = is_a( $this->wpdb, 'wpdb' );
 	}
 }

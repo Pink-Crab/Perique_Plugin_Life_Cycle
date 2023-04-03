@@ -16,9 +16,10 @@ use PinkCrab\Plugin_Lifecycle\State_Event\Uninstall;
 
 
 class Uninstall_Log_Calls implements Uninstall {
-	public $calls = array();
+	
+	public static $calls = array();
 
 	public function run(): void {
-		$this->calls[] = '.';
+		self::$calls[] = '.';
 	}
 }

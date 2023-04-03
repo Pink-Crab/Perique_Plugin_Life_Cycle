@@ -3,7 +3,7 @@
     <testsuites>
         <testsuite name="perique_plugin_life_cycle">
             <directory prefix="Test_" suffix=".php">./tests/Unit</directory>
-            <directory prefix="Test_" suffix=".php">./tests/Intergration</directory>
+            <directory prefix="Test_" suffix=".php">./tests/Integration</directory>
         </testsuite>
     </testsuites>
 
