@@ -179,7 +179,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 	/** @testdox When an error is generated running any deactivation events, this silently should be ignored so to not prevent disabling of a plugin. */
 	public function test_deactivation_should_not_trigger_exception_if_error_running() {
 		$this->expectNotToPerformAssertions();
-		
+
 		$container = $this->createMock( DI_Container::class );
 		$container->method( 'create' )
 			->willReturnCallback( fn( $class ) => new $class() );
@@ -196,7 +196,7 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 	/** @testdox When an error is generated running any uninstall events, this silently should be ignored so to not prevent disabling of a plugin. */
 	public function test_uninstall_should_not_trigger_exception_if_error_running() {
 		$this->expectNotToPerformAssertions();
-		
+
 		$container = $this->createMock( DI_Container::class );
 		$container->method( 'create' )
 			->willReturnCallback( fn( $class ) => new $class() );

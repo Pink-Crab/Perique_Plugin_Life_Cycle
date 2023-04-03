@@ -141,6 +141,21 @@ add_filter(
     }
 );
 ```
+
+You can also use the `Plugin_Life_Cycle::EVENT_LIST` filter to add additional events, after they have been constructed with the DI container.
+> Const `Plugin_Life_Cycle::EVENT_LIST` = 'PinkCrab\Plugin_Lifecycle\Event_List'
+
+```php
+add_filter(
+    Plugin_Life_Cycle::EVENT_LIST,
+    function( array $events ): array {
+        $events[] = new SomeEventInstance();
+        $events[] = $this->container->create(SomeOtherInstance::class);
+        return $events;
+    }
+);
+```
+
 ### Triggering actions before finalise
 
 You can use the `Plugin_Life_Cycle::PRE_FINALISE` filter to trigger actions before the finalise() method is called.
