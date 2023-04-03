@@ -129,7 +129,7 @@ class Plugin_State_Controller {
 	 */
 	private function get_events_for_state( string $state ): array {
 		return array_filter(
-			$this->state_events,
+			apply_filters( Plugin_Life_Cycle::EVENT_LIST, $this->state_events ),
 			function( $e ) use ( $state ): bool {
 				/* @phpstan-ignore-next-line */
 				return is_subclass_of( $e, $state );

@@ -31,6 +31,7 @@ class Plugin_Life_Cycle implements Module {
 	public const STATE_EVENTS  = 'PinkCrab\Plugin_Lifecycle\State_Events';
 	public const PRE_FINALISE  = 'PinkCrab\Plugin_Lifecycle\Pre_Finalise';
 	public const POST_FINALISE = 'PinkCrab\Plugin_Lifecycle\Post_Finalise';
+	public const EVENT_LIST    = 'PinkCrab\Plugin_Lifecycle\Event_List';
 
 	/** @var class-string<Plugin_State_Change>[] */
 	private array $events                              = array();
