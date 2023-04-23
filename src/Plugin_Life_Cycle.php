@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 /**
  * Interface for all classes which act on a plugin state change.
@@ -16,15 +16,14 @@ declare(strict_types=1);
 
 namespace PinkCrab\Plugin_Lifecycle;
 
+use Exception;
+use ReflectionClass;
 use PinkCrab\Loader\Hook_Loader;
 use PinkCrab\Perique\Application\Hooks;
-
-use PinkCrab\Perique\Application\App;
 use PinkCrab\Perique\Interfaces\Module;
 use PinkCrab\Perique\Application\App_Config;
 use PinkCrab\Perique\Interfaces\DI_Container;
-use PinkCrab\Plugin_Lifecycle\Plugin_State_Exception;
-use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
+use ReflectionMethod;
 
 class Plugin_Life_Cycle implements Module {
 
@@ -42,6 +41,7 @@ class Plugin_Life_Cycle implements Module {
 	 * Adds an event to the event queue.
 	 *
 	 * @param class-string<Plugin_State_Change> $event
+	 *
 	 * @return self
 	 */
 	public function event( string $event ): self {
@@ -50,6 +50,7 @@ class Plugin_Life_Cycle implements Module {
 			throw Plugin_State_Exception::invalid_state_change_event_type( $event );
 		}
 		$this->events[] = $event;
+
 		return $this;
 	}
 
@@ -57,10 +58,12 @@ class Plugin_Life_Cycle implements Module {
 	 * Sets the plugin base file.
 	 *
 	 * @param string $plugin_base_file
+	 *
 	 * @return self
 	 */
 	public function plugin_base_file( string $plugin_base_file ): self {
 		$this->plugin_base_file = $plugin_base_file;
+
 		return $this;
 	}
 
@@ -73,10 +76,6 @@ class Plugin_Life_Cycle implements Module {
 	 * @return void
 	 */
 	public function pre_boot( App_Config $config, Hook_Loader $loader, DI_Container $di_container ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceBeforeLastUsed
-
-		if ( null === $this->plugin_base_file ) {
-			throw Plugin_State_Exception::invalid_plugin_base_file( $this->plugin_base_file );
-		}
 
 		// Create the instance of the state controller.
 		$this->state_controller = new Plugin_State_Controller( $di_container, $this->plugin_base_file );
@@ -126,6 +125,7 @@ class Plugin_Life_Cycle implements Module {
 		$events = array_unique( $events );
 		$events = array_filter( $events, 'is_string' );
 		$events = array_filter( $events, fn( $event ) => is_subclass_of( $event, Plugin_State_Change::class ) );
+
 		return $events;
 	}
 
@@ -141,5 +141,4 @@ class Plugin_Life_Cycle implements Module {
 	public function get_middleware(): ?string {
 		return null;
 	}
-
 }
