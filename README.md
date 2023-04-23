@@ -53,9 +53,10 @@ $app = (new App_Factory())
     ->module(
         Plugin_Life_Cycle::class, 
         fn(Plugin_Life_Cycle $module): Plugin_Life_Cycle => $module
-            ->plugin_base_file(__FILE__)
+            ->plugin_base_file(__FILE__) // Optional
             ->event(SomeEvent::class)
             ->event('Foo\Some_Class_Name')
+     )
     ->boot();
 ```
 
