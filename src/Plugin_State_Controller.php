@@ -195,11 +195,20 @@ class Plugin_State_Controller {
 
 		$backtrace = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
 
-		$source_trace = array_values( array_filter( $backtrace, function ( $bt ) {
-			return array_key_exists( 'class', $bt ) && $bt['class'] === App_Factory::class;
-		} ) );
+		$source_trace = array_values(
+			array_filter(
+				$backtrace,
+				function ( $bt ) {
+					return array_key_exists( 'class', $bt ) && $bt['class'] === App_Factory::class;
+				}
+			)
+		);
 
 		if ( 1 !== count( $source_trace ) ) {
+			throw Plugin_State_Exception::failed_to_locate_calling_file();
+		}
+
+		if ( ! \array_key_exists( 'file', $source_trace[0] ) ) {
 			throw Plugin_State_Exception::failed_to_locate_calling_file();
 		}
 
