@@ -53,20 +53,6 @@ class Test_Moudle extends WP_UnitTestCase {
 		self::reset_event_counters();
 	}
 
-
-
-	/** @testdox Attempting to boot the Module without defining the plugin path, will restult in an exception being thrown. */
-	public function test_boot_without_plugin_path_throws_exception(): void {
-		$this->expectException( Plugin_State_Exception::class );
-		$this->expectExceptionCode( 105 );
-		$this->expectExceptionMessage( 'No plugin base file name passed.' );
-
-		$app = self::$app_instance;
-		$app->module( Plugin_Life_Cycle::class )
-			->boot();
-
-	}
-
 	/** @testdox Attempting to pass a string which is not a valid event, should result in an exception being thrown */
 	public function test_boot_with_invalid_event_throws_exception(): void {
 		$this->expectException( Plugin_State_Exception::class );

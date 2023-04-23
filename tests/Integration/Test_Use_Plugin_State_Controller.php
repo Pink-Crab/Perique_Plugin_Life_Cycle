@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace PinkCrab\Plugin_Lifecycle\Tests\Integration;
 
+use PinkCrab\Plugin_Lifecycle\Plugin_State_Controller;
 use WP_UnitTestCase;
 use Gin0115\WPUnit_Helpers\Objects;
 use PinkCrab\Perique\Application\App_Factory;
@@ -146,7 +147,7 @@ class Test_Use_Plugin_State_Controller extends WP_UnitTestCase {
 					->plugin_base_file( self::PLUGIN_BASE_FILE )
 			)
 			->boot();
-		
+
 
 
 		// Hook should be added to global actions.
@@ -162,7 +163,7 @@ class Test_Use_Plugin_State_Controller extends WP_UnitTestCase {
 					->plugin_base_file( self::PLUGIN_BASE_FILE )
 			)
 			->boot();
-		
+
 
 		// Hook should be added to global actions.
 		$this->assertEquals( 0, $this->count_registered_hook_callbacks( 'uninstall_' . $this->get_plugin_base_file() ) );
@@ -170,7 +171,7 @@ class Test_Use_Plugin_State_Controller extends WP_UnitTestCase {
 
 	/** @testdox It should be possible to use actions to access the modules both before and after the finalise process is run  */
 	public function test_can_use_actions_to_access_modules(): void {
-		
+
 		add_action(Plugin_Life_Cycle::PRE_FINALISE, function(Plugin_Life_Cycle $module) {
 			// Add to the log before finalise.
 			Activation_Log_Calls::$calls[] = 'pre-finalise ' . get_class($module);
@@ -182,7 +183,7 @@ class Test_Use_Plugin_State_Controller extends WP_UnitTestCase {
 			Activation_Log_Calls::$calls[] = 'post-finalise ' . get_class($module);
 			$this->assertInstanceOf( Plugin_Life_Cycle::class, $module );
 		});
-		
+
 		$app = self::$app_instance
 			->module(
 				Plugin_Life_Cycle::class,
@@ -204,6 +205,19 @@ class Test_Use_Plugin_State_Controller extends WP_UnitTestCase {
 		$this->assertTrue( has_action( 'activate_' . $this->get_plugin_base_file() ) );
 	}
 
+	public function test_instantiating_source_file_should_be_set_if_not_explicitly_declared() {
+
+		self::$app_instance
+			->module(
+				Plugin_Life_Cycle::class,
+				fn( Plugin_Life_Cycle $e ) => $e
+					->event( Activation_Log_Calls::class )
+			)
+			->boot();
+
+		$this->assertTrue( has_action( 'activate_' . ltrim( __FILE__, '/' ) ) );
+	}
+
 	/**
 	 * Gets a count of all callbacks for a given hook.
 	 *
@@ -222,5 +236,4 @@ class Test_Use_Plugin_State_Controller extends WP_UnitTestCase {
 		}
 		return $count;
 	}
-
 }

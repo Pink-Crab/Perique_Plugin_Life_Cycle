@@ -20,8 +20,8 @@ A module for the PinkCrab Perique Framework which makes it easy to add subscribe
 
 > Requires  
 > [Perique Plugin Framework 2.0.*](https://perique.info)  
-> Wordpress 5.9+ (tested from WP5.9 to WP6.1)  
-> PHP 7.4+ (tested from PHP7.4 to PHP8.1)  
+> Wordpress 5.9+ (tested from WP5.9 to WP6.2)  
+> PHP 7.4+ (tested from PHP7.4 to PHP8.2)  
 
 ****
 
@@ -59,7 +59,7 @@ $app = (new App_Factory())
     ->boot();
 ```
 
-The `plugin_base_file()` must be supplied and it must match the entry point of your plugin.
+You can either pass the `plugin_base_file` as the path to the main plugin file, or if left empty will assume its the file used to create the app instance.
 
 All events can be passed as there calss name, should be full namespace, or as a string of the class name.
 
@@ -188,6 +188,7 @@ add_action(
 
 
 ## Change Log ##
+* 2.0.1 - Reintroduced the getting the base path from the plugin file, if not defined (thanks @hibernius) and updated dev dependencies.
 * 2.0.0 - Updated for Perique V2 and implements the new Module system.
 * 1.0.0 - *skipped*
 * 0.2.1 - Updated dev dependencies and GH pipeline.
