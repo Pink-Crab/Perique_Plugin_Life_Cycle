@@ -209,4 +209,62 @@ class Test_Plugin_State_Controller extends WP_UnitTestCase {
 			$this->fail( "Exception caught which should be silent {$exception->getMessage()}" );
 		}
 	}
+
+	/** @testdox When the App_Factory appears in the backtrace, one element should be in the resulting array. */
+	public function test_app_factory_filter_should_return_one_element_array_if_app_factory_in_backtrace(  ): void {
+
+		// Mock out app to construct all classes as null
+		$container = $this->createMock( DI_Container::class );
+		$container->method( 'create' )
+		          ->willReturnCallback( fn( $class ) => null );
+
+		$state_controller = new Plugin_State_Controller( $container, self::PLUGIN_BASE_FILE );
+
+		$filtered_backtrace = $state_controller->filter_app_factory(
+			[ [ 'class' => 'PinkCrab\Perique\Application\App_Factory' ] ]
+		);
+
+		$this->assertCount( 1, $filtered_backtrace );
+	}
+
+	/** @testdox When the App_Factory doesn't appear in the backtrace, no elements should be in the resulting array. */
+	public function test_app_factory_filter_should_return_empty_array_if_app_factory_not_in_backtrace(  ): void {
+
+		// Mock out app to construct all classes as null
+		$container = $this->createMock( DI_Container::class );
+		$container->method( 'create' )
+		          ->willReturnCallback( fn( $class ) => null );
+
+		$state_controller = new Plugin_State_Controller( $container, self::PLUGIN_BASE_FILE );
+
+		$filtered_backtrace = $state_controller->filter_app_factory(
+			[ [ 'class' => 'PinkCrab\Perique\Application\Not_App_Factory' ] ]
+		);
+
+		$this->assertCount( 0, $filtered_backtrace );
+	}
+
+	/** @testdox When an array with one element is passed to array_has_one_element, it should return true. */
+	public function test_one_element_array_check_should_return_true_if_array_contains_one_element(  ) {
+		// Mock out app to construct all classes as null
+		$container = $this->createMock( DI_Container::class );
+		$container->method( 'create' )
+		          ->willReturnCallback( fn( $class ) => null );
+
+		$state_controller = new Plugin_State_Controller( $container, self::PLUGIN_BASE_FILE );
+
+		$this->assertTrue( $state_controller->array_has_one_element([1]) );
+	}
+
+	/** @testdox When an array with zero or 2+ elements is passed to array_has_one_element, it should return false. */
+	public function test_one_element_array_check_should_return_true_if_array_doesnt_contain_one_element(  ) {
+// Mock out app to construct all classes as null
+		$container = $this->createMock( DI_Container::class );
+		$container->method( 'create' )
+		          ->willReturnCallback( fn( $class ) => null );
+
+		$state_controller = new Plugin_State_Controller( $container, self::PLUGIN_BASE_FILE );
+
+		$this->assertFalse( $state_controller->array_has_one_element([1, 2]) );
+	}
 }

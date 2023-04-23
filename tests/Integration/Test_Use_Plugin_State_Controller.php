@@ -206,11 +206,16 @@ class Test_Use_Plugin_State_Controller extends WP_UnitTestCase {
 	}
 
 	public function test_instantiating_source_file_should_be_set_if_not_explicitly_declared() {
+
 		self::$app_instance
-			->module( Plugin_Life_Cycle::class )
+			->module(
+				Plugin_Life_Cycle::class,
+				fn( Plugin_Life_Cycle $e ) => $e
+					->event( Activation_Log_Calls::class )
+			)
 			->boot();
 
-		$this->assertTrue( has_action( 'activate_' . $this->get_plugin_base_file() ) );
+		$this->assertTrue( has_action( 'activate_' . ltrim( __FILE__, '/' ) ) );
 	}
 
 	/**
