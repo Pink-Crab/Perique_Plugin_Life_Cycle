@@ -16,6 +16,7 @@ declare( strict_types=1 );
 
 namespace PinkCrab\Plugin_Lifecycle;
 
+use PinkCrab\Perique\Application\App_Factory;
 use PinkCrab\Perique\Interfaces\DI_Container;
 use PinkCrab\Plugin_Lifecycle\State_Change_Queue;
 use PinkCrab\Plugin_Lifecycle\Plugin_State_Change;
@@ -191,7 +192,8 @@ class Plugin_State_Controller {
 	 * @throws Plugin_State_Exception
 	 */
 	protected function get_instantiating_file(): ?string {
-		$backtrace = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
+
+		$backtrace    = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
 		$source_trace = $this->filter_app_factory( $backtrace );
 
 		if ( ! $this->array_has_one_element( $source_trace ) ) {
@@ -208,9 +210,10 @@ class Plugin_State_Controller {
 	 *
 	 * @return array
 	 */
-	protected function filter_app_factory( array $backtrace ): array {
+	public function filter_app_factory( array $backtrace ): array {
+
 		$backtrace = array_filter( $backtrace, function ( $bt ) {
-			return array_key_exists( 'class', $bt ) && $bt['class'] === 'PinkCrab\Perique\Application\App_Factory';
+			return array_key_exists( 'class', $bt ) && $bt['class'] === App_Factory::class;
 		} );
 
 		return array_values( $backtrace );
@@ -223,7 +226,7 @@ class Plugin_State_Controller {
 	 *
 	 * @return bool
 	 */
-	protected function array_has_one_element( array $array ): bool {
+	public function array_has_one_element( array $array ): bool {
 		return 1 === count( $array );
 	}
 }
