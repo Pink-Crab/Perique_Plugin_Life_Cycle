@@ -44,7 +44,7 @@ class Plugin_State_Controller {
 	/**
 	 * Holds the location of the plugin base file.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	protected $plugin_base_file;
 
@@ -193,40 +193,16 @@ class Plugin_State_Controller {
 	 */
 	protected function get_instantiating_file(): ?string {
 
-		$backtrace    = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
-		$source_trace = $this->filter_app_factory( $backtrace );
+		$backtrace = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
 
-		if ( ! $this->array_has_one_element( $source_trace ) ) {
+		$source_trace = array_values( array_filter( $backtrace, function ( $bt ) {
+			return array_key_exists( 'class', $bt ) && $bt['class'] === App_Factory::class;
+		} ) );
+
+		if ( 1 !== count( $source_trace ) ) {
 			throw Plugin_State_Exception::failed_to_locate_calling_file();
 		}
 
 		return $source_trace[0]['file'];
-	}
-
-	/**
-	 * Filter array for the App_Factory class.
-	 *
-	 * @param array $backtrace
-	 *
-	 * @return array
-	 */
-	public function filter_app_factory( array $backtrace ): array {
-
-		$backtrace = array_filter( $backtrace, function ( $bt ) {
-			return array_key_exists( 'class', $bt ) && $bt['class'] === App_Factory::class;
-		} );
-
-		return array_values( $backtrace );
-	}
-
-	/**
-	 * Return true if array has a singular element.
-	 *
-	 * @param array $array
-	 *
-	 * @return bool
-	 */
-	public function array_has_one_element( array $array ): bool {
-		return 1 === count( $array );
 	}
 }
