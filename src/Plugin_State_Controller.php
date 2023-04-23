@@ -44,7 +44,7 @@ class Plugin_State_Controller {
 	/**
 	 * Holds the location of the plugin base file.
 	 *
-	 * @var string|null
+	 * @var string
 	 */
 	protected $plugin_base_file;
 
@@ -95,11 +95,6 @@ class Plugin_State_Controller {
 	public function finalise(): self {
 
 		$file = $this->plugin_base_file;
-
-		// Fail if file hasn't been set.
-		if ( null === $file ) {
-			throw Plugin_State_Exception::invalid_plugin_base_file( $this->plugin_base_file );
-		}
 
 		// Activation hooks if need adding.
 		if ( $this->has_events_for_state( Activation::class ) ) {
@@ -188,10 +183,10 @@ class Plugin_State_Controller {
 	/**
 	 * Get the path of the file that instantiated this class.
 	 *
-	 * @return string|null
+	 * @return string
 	 * @throws Plugin_State_Exception
 	 */
-	protected function get_instantiating_file(): ?string {
+	protected function get_instantiating_file(): string {
 
 		$backtrace = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
 
