@@ -132,12 +132,10 @@ class Plugin_Life_Cycle implements Module {
 	## Unused methods
 
 	/** @inheritDoc */
-	public function pre_register( App_Config $config, Hook_Loader $loader, DI_Container $di_container ): void {
-	} // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceBeforeLastUsed
+	public function pre_register( App_Config $config, Hook_Loader $loader, DI_Container $di_container ): void {} // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceBeforeLastUsed
 
 	/** @inheritDoc */
-	public function post_register( App_Config $config, Hook_Loader $loader, DI_Container $di_container ): void {
-	} // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceBeforeLastUsed
+	public function post_register( App_Config $config, Hook_Loader $loader, DI_Container $di_container ): void {} // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceBeforeLastUsed
 
 	/** @inheritDoc */
 	public function get_middleware(): ?string {
