@@ -32,7 +32,9 @@ class Plugin_Life_Cycle implements Module {
 	public const POST_FINALISE = 'PinkCrab\Plugin_Lifecycle\Post_Finalise';
 	public const EVENT_LIST    = 'PinkCrab\Plugin_Lifecycle\Event_List';
 
-	/** @var class-string<Plugin_State_Change>[] */
+	/**
+ * @var class-string<Plugin_State_Change>[]
+*/
 	private array $events                              = array();
 	private ?string $plugin_base_file                  = null;
 	private ?Plugin_State_Controller $state_controller = null;
@@ -47,7 +49,7 @@ class Plugin_Life_Cycle implements Module {
 	public function event( string $event ): self {
 		// Ensure the event is a valid class.
 		if ( ! class_exists( $event ) ) {
-			throw Plugin_State_Exception::invalid_state_change_event_type( $event );
+			throw Plugin_State_Exception::invalid_state_change_event_type( $event ); //phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 		$this->events[] = $event;
 
@@ -104,11 +106,11 @@ class Plugin_Life_Cycle implements Module {
 
 		// Add events to the controller.
 		foreach ( $this->get_events() as $event ) {
-			$this->state_controller->event( $event );
+			$this->state_controller->event( $event ); // @phpstan-ignore-line
 		}
 
 		// Register the state controller.
-		$this->state_controller->finalise();
+		$this->state_controller->finalise(); // @phpstan-ignore-line
 
 		// Trigger the post action.
 		do_action( self::POST_FINALISE, $this );
@@ -131,13 +133,19 @@ class Plugin_Life_Cycle implements Module {
 
 	## Unused methods
 
-	/** @inheritDoc */
+	/**
+ * @inheritDoc
+*/
 	public function pre_register( App_Config $config, Hook_Loader $loader, DI_Container $di_container ): void {} // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceBeforeLastUsed
 
-	/** @inheritDoc */
+	/**
+ * @inheritDoc
+*/
 	public function post_register( App_Config $config, Hook_Loader $loader, DI_Container $di_container ): void {} // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceBeforeLastUsed
 
-	/** @inheritDoc */
+	/**
+ * @inheritDoc
+*/
 	public function get_middleware(): ?string {
 		return null;
 	}
