@@ -38,7 +38,7 @@
         "vlucas/phpdotenv": "<=5.5.0"
     },
     "require": {
-        "php": ">=7.4.0",
+        "php": ">=8.0.0",
         "pinkcrab/perique-framework-core": "2.1.*"
     },
     "scripts": {
