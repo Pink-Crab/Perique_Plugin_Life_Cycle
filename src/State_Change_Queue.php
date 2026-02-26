@@ -41,7 +41,7 @@ class State_Change_Queue {
 			} catch ( \Throwable $th ) {
 				// If caught on Activation, throw Plugin_State_Exception
 				if ( is_a( $event, Activation::class ) ) {
-					throw Plugin_State_Exception::error_running_state_change_event( $event, $th );
+					throw Plugin_State_Exception::error_running_state_change_event( $event, $th ); //phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 				}
 
 				continue;
