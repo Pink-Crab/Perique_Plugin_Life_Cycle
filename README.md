@@ -189,6 +189,7 @@ add_action(
 
 
 ## Change Log ##
+* 2.1.0 - Updated for Perique V2.1 and added some additional filters to allow for extending the module.
 * 2.0.1 - Reintroduced the getting the base path from the plugin file, if not defined (thanks @hibernius) and updated dev dependencies.
 * 2.0.0 - Updated for Perique V2 and implements the new Module system.
 * 1.0.0 - *skipped*
