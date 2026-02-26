@@ -38,7 +38,7 @@
     },
     "require": {
         "php": ">=7.4.0",
-        "pinkcrab/perique-framework-core": "2.0.*"
+        "pinkcrab/perique-framework-core": "2.1.*"
     },
     "scripts": {
         "test": "phpunit --coverage-clover clover.xml --testdox",
