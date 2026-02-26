@@ -67,19 +67,19 @@ class Plugin_State_Controller {
 
 		/* @phpstan-ignore-next-line, as this cannot be type hinted the check exists. */
 		if ( ! is_subclass_of( $state_event, Plugin_State_Change::class ) ) {
-			throw Plugin_State_Exception::invalid_state_change_event_type( $state_event );
+			throw Plugin_State_Exception::invalid_state_change_event_type( $state_event ); //phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 
 		try {
 			/** @var Plugin_State_Change|null */
 			$state_event = $this->container->create( $state_event );
 		} catch ( \Throwable $th ) {
-			throw Plugin_State_Exception::failed_to_create_state_change_event( $state_event_string );
+			throw Plugin_State_Exception::failed_to_create_state_change_event( $state_event_string ); //phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 
 		// Throw exception if failed to create
 		if ( null === $state_event || ! is_a( $state_event, Plugin_State_Change::class ) ) {
-			throw Plugin_State_Exception::failed_to_create_state_change_event( $state_event_string );
+			throw Plugin_State_Exception::failed_to_create_state_change_event( $state_event_string ); //phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 		$this->state_events[] = $state_event;
 
